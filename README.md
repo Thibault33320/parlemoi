@@ -73,9 +73,15 @@ flutter run               # appareil connecté
 # Web — le base-href est indispensable, sinon les assets tombent en 404
 flutter build web --release --base-href /parlemoi/
 
-# Android
+# Android — nécessite le SDK Android installé localement
 flutter build apk --release
 ```
+
+**Sans SDK Android installé**, chaque push sur `main` en construit un :
+onglet [Actions](https://github.com/Thibault33320/parlemoi/actions) → dernier
+run → section « Artifacts » → `parlemoi-apk-…`. Décompresser le `.zip`, envoyer
+l'`.apk` sur le téléphone et l'ouvrir (autoriser l'installation depuis cette
+source). Conservé 30 jours.
 
 ### Publier
 

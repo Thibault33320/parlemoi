@@ -31,6 +31,38 @@ jobs:
       - run: flutter analyze
       - run: flutter test
 
+  # L'APK est construit ici et non sur le Mac de Thibault : il n'a pas le SDK
+  # Android, et il n'a pas à l'installer pour obtenir une version testable.
+  # Le fichier se télécharge depuis l'onglet Actions, section « Artifacts ».
+  android:
+    name: Construire l'APK Android
+    needs: verifier
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.8
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter build apk --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: parlemoi-apk-${{ github.sha }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 30
+
   publier:
     name: Publier sur GitHub Pages
     needs: verifier
