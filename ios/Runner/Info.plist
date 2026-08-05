@@ -7,7 +7,13 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Parlemoi</string>
+	<string>ParleMoi</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Pour photographier un objet réel et l'utiliser comme image d'une carte.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Pour choisir une photo existante comme image d'une carte.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Pour enregistrer votre voix et la faire dire par une carte.</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

@@ -1,7 +1,7 @@
 name: parlemoi
 description: Application de communication visuelle pour Raphaël.
 publish_to: "none"
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
@@ -12,6 +12,10 @@ dependencies:
   flutter_tts: ^4.2.3
   flutter_svg: ^2.2.0
   shared_preferences: ^2.5.3
+  image_picker: ^1.2.3
+  record: ^7.1.1
+  audioplayers: ^6.8.1
+  path_provider: ^2.1.6
 
 dev_dependencies:
   flutter_test:
@@ -21,4 +25,13 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/catalogue.json
     - assets/pictograms/
+
+  # Police embarquée : sans elle, Flutter Web va chercher les emoji couleur sur
+  # un CDN Google et Raphaël verrait des carrés vides hors connexion.
+  # Réduite aux emoji utilisés par tool/build_emoji_font.py (4,8 Mo -> 383 Ko).
+  fonts:
+    - family: NotoColorEmoji
+      fonts:
+        - asset: assets/fonts/NotoColorEmoji.ttf

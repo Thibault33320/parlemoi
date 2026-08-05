@@ -1,6 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Enregistrement de la voix du parent sur une carte. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+
+    <!-- Appareil photo et micro sont utilises mais restent facultatifs :
+         l'application doit pouvoir s'installer sur une tablette qui n'en a pas. -->
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-feature android:name="android.hardware.microphone" android:required="false"/>
+
     <application
-        android:label="parlemoi"
+        android:label="ParleMoi"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

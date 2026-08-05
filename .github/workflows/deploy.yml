@@ -1,0 +1,77 @@
+name: Vérifier et publier
+
+# Le site en ligne accusait trois heures de retard sur `main` parce que la
+# publication était manuelle. Elle est désormais automatique : chaque commit
+# sur `main` reconstruit et republie le site.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  verifier:
+    name: Analyse et tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.8
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+  publier:
+    name: Publier sur GitHub Pages
+    needs: verifier
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.8
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      # Le site est servi depuis https://thibault33320.github.io/parlemoi/ :
+      # sans ce base-href, la page se charge mais tous les assets tombent en 404.
+      - name: Construire la version web
+        run: flutter build web --release --base-href /parlemoi/
+
+      # Sans ce fichier, GitHub Pages passe le dossier dans Jekyll, qui ignore
+      # les fichiers commençant par un underscore.
+      - name: Désactiver Jekyll
+        run: touch build/web/.nojekyll
+
+      - name: Publier sur la branche gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          cd build/web
+          git init --initial-branch=gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Publication depuis ${GITHUB_SHA::7}"
+          # Force : gh-pages ne contient que le site construit, jamais de
+          # sources. L'historique du code reste entièrement sur main.
+          git push --force \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            gh-pages

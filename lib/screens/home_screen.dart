@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import '../data/default_cards.dart';
+
 import '../models/communication_card.dart';
-import '../services/storage_service.dart';
-import '../services/tts_service.dart';
+import '../state/app_controller.dart';
 import '../widgets/communication_tile.dart';
 import 'parent_screen.dart';
 
+/// L'interface de Raphael. Pas de texte indispensable, de grandes cibles,
+/// et l'urgence toujours a portee.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -14,113 +15,80 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _tts = TtsService();
-  final _storage = StorageService();
-
-  Set<String> _favorites = <String>{};
-  int _columns = 2;
-  double _speechRate = 0.36;
-  CardCategory _category = CardCategory.favoris;
-  bool _ready = false;
+  String _tabId = favoritesTabId;
 
   @override
-  void initState() {
-    super.initState();
-    _load();
-  }
+  Widget build(BuildContext context) {
+    final controller = AppScope.of(context);
+    final tabs = <_Tab>[
+      const _Tab(id: favoritesTabId, name: 'Favoris', emoji: '⭐'),
+      for (final category in controller.visibleCategories)
+        _Tab(id: category.id, name: category.name, emoji: category.emoji),
+    ];
 
-  Future<void> _load() async {
-    final favorites = await _storage.loadFavorites();
-    final columns = await _storage.loadColumns();
-    final rate = await _storage.loadSpeechRate();
-    await _tts.initialize(rate: rate);
-
-    if (!mounted) return;
-    setState(() {
-      _favorites = favorites.isEmpty
-          ? {'faim', 'soif', 'pipi', 'popo', 'mal', 'parc'}
-          : favorites;
-      _columns = columns;
-      _speechRate = rate;
-      _ready = true;
-    });
-  }
-
-  List<CommunicationCard> get _visibleCards {
-    if (_category == CardCategory.favoris) {
-      return defaultCards.where((card) => _favorites.contains(card.id)).toList();
+    // La categorie selectionnee peut disparaitre si le parent vient de
+    // desactiver ses dernieres cartes.
+    if (!tabs.any((tab) => tab.id == _tabId)) {
+      _tabId = favoritesTabId;
     }
-    return defaultCards.where((card) => card.category == _category).toList();
-  }
 
-  Future<void> _toggleFavorite(CommunicationCard card) async {
-    setState(() {
-      if (_favorites.contains(card.id)) {
-        _favorites.remove(card.id);
-      } else {
-        _favorites.add(card.id);
-      }
-    });
-    await _storage.saveFavorites(_favorites);
-  }
+    final cards = controller.cardsInCategory(_tabId);
 
-  Future<void> _openParents() async {
-    final controller = TextEditingController();
-    final allowed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Code parents'),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          obscureText: true,
-          autofocus: true,
-          decoration: const InputDecoration(hintText: 'Code PIN'),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'PARLEMOI • RAPHAËL',
+          style: TextStyle(fontWeight: FontWeight.w900),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annuler'),
+          _ParentButton(onUnlocked: () => _openParents(controller)),
+        ],
+      ),
+      body: Column(
+        children: [
+          _CategoryStrip(
+            tabs: tabs,
+            selectedId: _tabId,
+            onSelected: (id) => setState(() => _tabId = id),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text == '2580'),
-            child: const Text('Ouvrir'),
+          Expanded(
+            child: cards.isEmpty
+                ? const _EmptyCategory()
+                : _CardGrid(
+                    cards: cards,
+                    columns: controller.settings.columns,
+                    showLabels: controller.settings.showLabels,
+                    speakingCardId: controller.speakingCardId,
+                    favoriteIds: controller.settings.favoriteIds,
+                    onTap: controller.speak,
+                  ),
           ),
         ],
       ),
-    );
-
-    if (allowed != true || !mounted) return;
-
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ParentScreen(
-          columns: _columns,
-          speechRate: _speechRate,
-          onColumnsChanged: (value) async {
-            setState(() => _columns = value);
-            await _storage.saveColumns(value);
-          },
-          onSpeechRateChanged: (value) async {
-            setState(() => _speechRate = value);
-            await _tts.setRate(value);
-            await _storage.saveSpeechRate(value);
-          },
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _openEmergency(controller),
+        backgroundColor: const Color(0xFFD93434),
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.sos_rounded, size: 28),
+        label: const Text(
+          'URGENCE',
+          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 17),
         ),
       ),
     );
   }
 
-  Future<void> _openEmergency() async {
-    final emergency = defaultCards.where((card) => card.isEmergency).toList();
+  /// Urgence : un toucher pour ouvrir, un toucher pour parler. Jamais plus.
+  Future<void> _openEmergency(AppController controller) async {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => SafeArea(
+      backgroundColor: const Color(0xFFFFF5F5),
+      builder: (sheetContext) => SafeArea(
         child: FractionallySizedBox(
-          heightFactor: 0.88,
+          heightFactor: 0.9,
           child: Padding(
-            padding: const EdgeInsets.all(18),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 Row(
@@ -132,30 +100,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     IconButton(
-                      onPressed: () => Navigator.pop(context),
+                      iconSize: 32,
+                      onPressed: () => Navigator.pop(sheetContext),
                       icon: const Icon(Icons.close_rounded),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
                 Expanded(
-                  child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 0.95,
+                  child: ListenableBuilder(
+                    listenable: controller,
+                    builder: (context, _) => _CardGrid(
+                      cards: controller.emergencyCards,
+                      columns: controller.settings.columns,
+                      showLabels: controller.settings.showLabels,
+                      speakingCardId: controller.speakingCardId,
+                      favoriteIds: const {},
+                      onTap: controller.speak,
                     ),
-                    itemCount: emergency.length,
-                    itemBuilder: (context, index) {
-                      final card = emergency[index];
-                      return CommunicationTile(
-                        card: card,
-                        isFavorite: _favorites.contains(card.id),
-                        onTap: () => _tts.speak(card.spokenText),
-                        onLongPress: () => _toggleFavorite(card),
-                      );
-                    },
                   ),
                 ),
               ],
@@ -166,105 +128,236 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (!_ready) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    final cards = _visibleCards;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'PARLEMOI • RAPHAËL',
-          style: TextStyle(fontWeight: FontWeight.w900),
+  Future<void> _openParents(AppController controller) async {
+    final controllerText = TextEditingController();
+    final allowed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Code parents'),
+        content: TextField(
+          controller: controllerText,
+          keyboardType: TextInputType.number,
+          obscureText: true,
+          autofocus: true,
+          decoration: const InputDecoration(hintText: 'Code PIN'),
+          onSubmitted: (value) =>
+              Navigator.pop(dialogContext, controller.checkPin(value)),
         ),
         actions: [
-          IconButton(
-            tooltip: 'Espace parents',
-            onPressed: _openParents,
-            icon: const Icon(Icons.lock_rounded),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Annuler'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(
+              dialogContext,
+              controller.checkPin(controllerText.text),
+            ),
+            child: const Text('Ouvrir'),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
-        child: cards.isEmpty
-            ? const Center(
-                child: Text(
-                  'Aucun favori pour le moment',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                ),
-              )
-            : GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: _columns,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 0.88,
-                ),
-                itemCount: cards.length,
-                itemBuilder: (context, index) {
-                  final card = cards[index];
-                  return CommunicationTile(
-                    card: card,
-                    isFavorite: _favorites.contains(card.id),
-                    onTap: () => _tts.speak(card.spokenText),
-                    onLongPress: () => _toggleFavorite(card),
-                  );
-                },
-              ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _openEmergency,
-        backgroundColor: const Color(0xFFD93434),
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.sos_rounded),
-        label: const Text(
-          'URGENCE',
-          style: TextStyle(fontWeight: FontWeight.w900),
+    );
+
+    if (!mounted) return;
+
+    if (allowed != true) {
+      if (allowed == false && controllerText.text.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Code incorrect')),
+        );
+      }
+      return;
+    }
+
+    await controller.stopSpeaking();
+    if (!mounted) return;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AppScope(
+          notifier: controller,
+          child: const ParentScreen(),
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: CardCategory.values.indexOf(_category),
-        onDestinationSelected: (index) {
-          setState(() => _category = CardCategory.values[index]);
+    );
+  }
+}
+
+class _Tab {
+  const _Tab({required this.id, required this.name, required this.emoji});
+
+  final String id;
+  final String name;
+  final String emoji;
+}
+
+/// Bande de categories. Un appui long est exige pour l'espace parents afin
+/// qu'un toucher accidentel de Raphael n'ouvre pas la demande de code.
+class _ParentButton extends StatelessWidget {
+  const _ParentButton({required this.onUnlocked});
+
+  final VoidCallback onUnlocked;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: 'Espace parents : appui long',
+      child: InkWell(
+        onLongPress: onUnlocked,
+        onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            duration: Duration(seconds: 2),
+            content: Text('Appui long pour ouvrir l\'espace parents'),
+          ),
+        ),
+        borderRadius: BorderRadius.circular(24),
+        child: const Padding(
+          padding: EdgeInsets.all(12),
+          child: Icon(Icons.lock_rounded),
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryStrip extends StatelessWidget {
+  const _CategoryStrip({
+    required this.tabs,
+    required this.selectedId,
+    required this.onSelected,
+  });
+
+  final List<_Tab> tabs;
+  final String selectedId;
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+
+    return SizedBox(
+      height: 86,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        itemCount: tabs.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final tab = tabs[index];
+          final selected = tab.id == selectedId;
+
+          return Material(
+            color: selected ? primary : Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            elevation: selected ? 3 : 1,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(18),
+              onTap: () => onSelected(tab.id),
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 84),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                // Sans reduction, une police systeme agrandie par un reglage
+                // d'accessibilite ferait deborder la pastille.
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        tab.emoji,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontFamilyFallback: emojiFontFallback,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        tab.name,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color:
+                              selected ? Colors.white : const Color(0xFF303030),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
         },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.star_outline_rounded),
-            selectedIcon: Icon(Icons.star_rounded),
-            label: 'Favoris',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'Besoins',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.healing_outlined),
-            selectedIcon: Icon(Icons.healing_rounded),
-            label: 'Douleur',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.sentiment_satisfied_alt_outlined),
-            selectedIcon: Icon(Icons.sentiment_satisfied_alt_rounded),
-            label: 'Émotions',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.toys_outlined),
-            selectedIcon: Icon(Icons.toys_rounded),
-            label: 'Activités',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.people_outline_rounded),
-            selectedIcon: Icon(Icons.people_rounded),
-            label: 'Personnes',
-          ),
-        ],
+      ),
+    );
+  }
+}
+
+class _CardGrid extends StatelessWidget {
+  const _CardGrid({
+    required this.cards,
+    required this.columns,
+    required this.showLabels,
+    required this.speakingCardId,
+    required this.favoriteIds,
+    required this.onTap,
+  });
+
+  final List<CommunicationCard> cards;
+  final int columns;
+  final bool showLabels;
+  final String? speakingCardId;
+  final Set<String> favoriteIds;
+  final ValueChanged<CommunicationCard> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final landscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
+
+    return GridView.builder(
+      padding: const EdgeInsets.fromLTRB(12, 4, 12, 96),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columns,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: landscape ? 1.25 : 0.88,
+      ),
+      itemCount: cards.length,
+      itemBuilder: (context, index) {
+        final card = cards[index];
+        return CommunicationTile(
+          card: card,
+          isFavorite: favoriteIds.contains(card.id),
+          isSpeaking: card.id == speakingCardId,
+          showLabel: showLabels,
+          onTap: () => onTap(card),
+        );
+      },
+    );
+  }
+}
+
+class _EmptyCategory extends StatelessWidget {
+  const _EmptyCategory();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('⭐', style: TextStyle(fontSize: 56)),
+            SizedBox(height: 12),
+            Text(
+              'Aucune carte ici pour le moment',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+            ),
+          ],
+        ),
       ),
     );
   }
