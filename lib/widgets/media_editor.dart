@@ -123,7 +123,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
             padding: EdgeInsets.only(top: 10),
             child: Text(
               'Une photo de l\'objet réel aide quand le pictogramme ne parle '
-              'pas à Raphaël : son vrai doudou, sa vraie tasse.',
+              'pas à l\'enfant : son vrai doudou, sa vraie tasse.',
               style: TextStyle(fontSize: 12, color: Color(0xFF606060)),
             ),
           ),

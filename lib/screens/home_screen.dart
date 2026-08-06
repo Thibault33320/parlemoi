@@ -38,9 +38,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'PARLEMOI • RAPHAËL',
-          style: TextStyle(fontWeight: FontWeight.w900),
+        title: Text(
+          controller.childScreenTitle,
+          style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         actions: [
           _ParentButton(onUnlocked: () => _openParents(controller)),

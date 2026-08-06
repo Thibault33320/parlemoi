@@ -476,7 +476,7 @@ class _ReorderScreen extends StatelessWidget {
             padding: EdgeInsets.all(16),
             child: Text(
               'Glissez les cartes pour changer leur ordre. '
-              'Une position stable aide Raphaël à retrouver une carte sans la lire.',
+              'Une position stable aide l\'enfant à retrouver une carte sans la lire.',
               style: TextStyle(fontSize: 14),
             ),
           ),
@@ -828,7 +828,7 @@ class _VoiceTabState extends State<_VoiceTab> {
               onChanged: (value) async {
                 if (value == null) return;
                 await controller.setVoice(value);
-                await controller.tts.speak('Bonjour Raphaël');
+                await controller.tts.speak(controller.voicePreviewSentence);
               },
               title: Text(voice.displayName),
               subtitle: Text(voice.locale),
@@ -862,7 +862,7 @@ class _VoiceTabState extends State<_VoiceTab> {
         const SizedBox(height: 12),
         FilledButton.icon(
           onPressed: () =>
-              controller.tts.speak('Bonjour, je suis Raphaël. J\'ai soif.'),
+              controller.tts.speak(controller.voicePreviewSentence),
           icon: const Icon(Icons.play_arrow_rounded),
           label: const Text('Tester la voix'),
         ),
@@ -920,6 +920,10 @@ class _DisplayTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
+        const _SectionTitle("Prénom de l'enfant"),
+        const SizedBox(height: 8),
+        const _ChildNameField(),
+        const SizedBox(height: 24),
         const _SectionTitle('Présentation des cartes'),
         const SizedBox(height: 8),
         SegmentedButton<DisplayMode>(
@@ -942,7 +946,7 @@ class _DisplayTab extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           settings.displayMode == DisplayMode.swipe
-              ? 'Une carte occupe tout l\'écran. Raphaël glisse vers le haut '
+              ? 'Une carte occupe tout l\'écran. L\'enfant glisse vers le haut '
                   'pour passer à la suivante, comme dans les Reels.'
               : 'Plusieurs cartes visibles à la fois. Utile pour proposer un '
                   'choix entre deux ou trois possibilités.',
@@ -970,7 +974,8 @@ class _DisplayTab extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.w800),
           ),
           subtitle: const Text(
-            "Raphaël ne lit pas seul : masquer le texte agrandit l'image "
+            "Un enfant qui ne lit pas seul n'a pas besoin du texte : le "
+            "masquer agrandit l'image "
             'et réduit ce qui le distrait.',
           ),
           value: settings.showLabels,
@@ -980,6 +985,60 @@ class _DisplayTab extends StatelessWidget {
         const _SectionTitle('Code parents'),
         const SizedBox(height: 8),
         const _PinChanger(),
+      ],
+    );
+  }
+}
+
+/// Le prenom s'affiche en haut de l'ecran enfant.
+///
+/// L'application a ete construite pour Raphael, mais rien n'y oblige : une
+/// autre famille doit pouvoir y mettre le prenom de son enfant.
+class _ChildNameField extends StatefulWidget {
+  const _ChildNameField();
+
+  @override
+  State<_ChildNameField> createState() => _ChildNameFieldState();
+}
+
+class _ChildNameFieldState extends State<_ChildNameField> {
+  late final TextEditingController _champ;
+
+  @override
+  void initState() {
+    super.initState();
+    _champ = TextEditingController(text: AppScope.of(context).settings.childName);
+  }
+
+  @override
+  void dispose() {
+    _champ.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = AppScope.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: _champ,
+          textCapitalization: TextCapitalization.words,
+          decoration: const InputDecoration(
+            labelText: 'Prénom',
+            hintText: 'Laisser vide pour n\'afficher que PARLEMOI',
+            border: OutlineInputBorder(),
+            isDense: true,
+          ),
+          onChanged: controller.setChildName,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Affiché en haut de l\'écran : ${controller.childScreenTitle}',
+          style: const TextStyle(fontSize: 13, color: Color(0xFF606060)),
+        ),
       ],
     );
   }

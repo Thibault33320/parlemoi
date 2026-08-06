@@ -193,6 +193,26 @@ class AppController extends ChangeNotifier {
     await _persist();
   }
 
+  /// Prenom affiche en haut de l'ecran enfant. Vide = seul « PARLEMOI » reste.
+  Future<void> setChildName(String value) async {
+    _settings.childName = value.trim();
+    await _persist();
+  }
+
+  /// Titre de l'ecran enfant, prenom compris s'il est renseigne.
+  String get childScreenTitle {
+    final prenom = _settings.childName.trim();
+    return prenom.isEmpty ? 'PARLEMOI' : 'PARLEMOI • ${prenom.toUpperCase()}';
+  }
+
+  /// Phrase de demonstration des reglages de voix.
+  String get voicePreviewSentence {
+    final prenom = _settings.childName.trim();
+    return prenom.isEmpty
+        ? "Bonjour. J'ai soif."
+        : "Bonjour $prenom. J'ai soif.";
+  }
+
   Future<void> setDisplayMode(DisplayMode value) async {
     _settings.displayMode = value;
     await _persist();

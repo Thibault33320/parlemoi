@@ -64,6 +64,7 @@ class Settings {
     required this.favoriteIds,
     required this.customCards,
     Map<String, CardMedia>? cardMedia,
+    this.childName = '',
     this.pin = defaultPin,
     this.displayMode = DisplayMode.swipe,
     this.columns = 2,
@@ -87,6 +88,9 @@ class Settings {
         (id, value) =>
             MapEntry(id, CardMedia.fromJson(value as Map<String, dynamic>)),
       ),
+      // Les configurations enregistrees avant l'ajout de ce reglage sont
+      // celles de Raphael : on ne lui retire pas son prenom de l'ecran.
+      childName: json['prenom'] as String? ?? 'Raphaël',
       pin: json['pin'] as String? ?? defaultPin,
       displayMode: DisplayMode.parse(json['affichage'] as String?),
       columns: json['colonnes'] as int? ?? 2,
@@ -109,6 +113,9 @@ class Settings {
   /// Photos et voix ajoutees par le parent, indexees par identifiant de carte.
   Map<String, CardMedia> cardMedia;
 
+  /// Prenom de l'enfant, affiche en haut de son ecran. Vide = non renseigne.
+  String childName;
+
   String pin;
   DisplayMode displayMode;
   int columns;
@@ -125,6 +132,7 @@ class Settings {
         'favoris': favoriteIds.toList(),
         'cartesPerso': customCards.map((c) => c.toJson()).toList(),
         'medias': cardMedia.map((id, media) => MapEntry(id, media.toJson())),
+        'prenom': childName,
         'pin': pin,
         'affichage': displayMode.name,
         'colonnes': columns,
