@@ -6,16 +6,16 @@ Ne pas modifier a la main : toute retouche invaliderait les empreintes.
 | | |
 |---|---|
 | **Date de l'inventaire** | 2026-08-06 |
-| **Horodatage complet** | 2026-08-06T16:23:45+02:00 |
-| **Revision Git** | `d05ae4ba38f35b3b7fcdaaa58185b8a5910441e8` |
-| **Date de cette revision** | 2026-08-06T15:32:12+02:00 |
+| **Horodatage complet** | 2026-08-06T16:24:57+02:00 |
+| **Revision Git** | `f22584f632ea1e86a7201769d5175b7108176ae2` |
+| **Date de cette revision** | 2026-08-06T16:24:47+02:00 |
 | **Nombre de fichiers** | 190 |
 | **Taille totale** | 1994 Ko |
 
 ## Empreinte globale
 
 ```
-43333cf357956afd130c0006d01c0ed3e67f12d8531e1d3f4ac75d546820de4f
+ef5ba1e2b14b3c58be489a55d7f3c12874b901c0f863397f3046d924475676ab
 ```
 
 Cette empreinte SHA-256 couvre l'ensemble des fichiers listes ci-dessous,
@@ -27,7 +27,7 @@ ou n'est pas, identique a celle deposee.
 | Fichier | Octets | Empreinte SHA-256 |
 |---|---|---|
 | `.github/workflows/deploy.yml` | 3780 | `37b5c801758c4f6d98aacb9e0f620d1bd338071dc01e81e5fe51dab50b59a4c6` |
-| `.gitignore` | 703 | `4a8d984279954e0461e0ffef9b9e7455340a0a762f227c01065a53482a83a4f1` |
+| `.gitignore` | 778 | `7d5d5527bca6afc9478b0a60b3e76c1fc37266b6e653741cd47696cd309974a7` |
 | `.metadata` | 1706 | `bb9eef7d3fba2e4f01d2f6d041d9426e9947d8b3adec6d61c8649736cb92149f` |
 | `README.md` | 9536 | `d0e22c4bb05c1dfd68b3f91e8f0245056f96511dc119d6a1667593ca13189d1d` |
 | `analysis_options.yaml` | 129 | `77fef77525fe865a414d48e3123d572a939e461e2bd3f0bfe201768bc5c8b82b` |
