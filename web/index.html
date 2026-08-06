@@ -1,46 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
   <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
+    Remplacé au moment du build par la valeur de `--base-href`.
+    Le site est servi depuis /parlemoi/ : sans cela, tous les assets tombent en 404.
   -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description"
+        content="Application de communication par pictogrammes et voix française.">
 
-  <!-- iOS meta tags & icons -->
+  <!--
+    Indispensable sur téléphone. Sans cette balise, le navigateur mobile rend la
+    page dans une fenêtre virtuelle de 980 px puis la dézoome : les cartes
+    deviennent minuscules et le glissement vertical est interprété comme un
+    défilement de page, pas comme un changement de carte.
+
+    `user-scalable=no` : le pincement n'apporte rien ici, les pictogrammes
+    occupent déjà tout l'écran. En revanche un zoom déclenché par accident
+    laisserait Raphaël devant un affichage décalé qu'il ne saurait pas défaire.
+  -->
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+  <meta name="theme-color" content="#F7F7F5">
+
+  <!-- Ajout à l'écran d'accueil sur iOS -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="parlemoi">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ParleMoi">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>parlemoi</title>
+  <title>ParleMoi</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    /*
+      Le glissement vers le haut doit changer de carte, et rien d'autre.
+      Sans ces règles, un balayage vertical déclenche le tirer-pour-rafraîchir
+      d'Android, le rebond élastique d'iOS ou la barre d'adresse du navigateur,
+      et Raphaël voit l'application bouger sans que la carte change.
+    */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: none;
+      background-color: #F7F7F5;
+      /* Un appui maintenu ne doit pas proposer de sélectionner du texte. */
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

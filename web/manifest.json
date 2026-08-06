@@ -1,11 +1,11 @@
 {
-    "name": "parlemoi",
-    "short_name": "parlemoi",
+    "name": "ParleMoi",
+    "short_name": "ParleMoi",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F7F7F5",
+    "theme_color": "#F7F7F5",
+    "description": "Application de communication par pictogrammes et voix française.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
@@ -31,5 +31,6 @@
             "type": "image/png",
             "purpose": "maskable"
         }
-    ]
+    ],
+    "lang": "fr"
 }

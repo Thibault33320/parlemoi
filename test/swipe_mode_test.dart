@@ -42,7 +42,8 @@ void main() {
     expect(find.byType(CardPictogram), findsOneWidget);
   });
 
-  testWidgets('glisser vers le haut passe a la carte suivante', (tester) async {
+  testWidgets('glisser du bas vers le haut passe a la carte suivante',
+      (tester) async {
     final controller = await pumpHome(tester);
     final favoris = controller.favoriteCards;
     expect(favoris.length, greaterThan(1));
@@ -50,12 +51,47 @@ void main() {
     expect(find.text(favoris[0].label), findsOneWidget);
     expect(find.text('1 / ${favoris.length}'), findsOneWidget);
 
+    // Contrainte absolue : le doigt monte, la carte suivante arrive. C'est le
+    // sens des Reels, celui que Raphael connait. Ne jamais inverser.
     await tester.fling(find.byType(PageView), const Offset(0, -400), 1200);
     await tester.pumpAndSettle();
 
     expect(find.text(favoris[1].label), findsOneWidget);
     expect(find.text(favoris[0].label), findsNothing);
     expect(find.text('2 / ${favoris.length}'), findsOneWidget);
+  });
+
+  testWidgets('un glissement lent vers le haut avance aussi, sans elan',
+      (tester) async {
+    final controller = await pumpHome(tester);
+    final favoris = controller.favoriteCards;
+
+    // Raphael peut pousser la carte doucement plutot que la lancer.
+    final centre = tester.getCenter(find.byType(PageView));
+    final geste = await tester.startGesture(centre);
+    for (var i = 0; i < 12; i++) {
+      await geste.moveBy(const Offset(0, -25));
+      await tester.pump(const Duration(milliseconds: 24));
+    }
+    await geste.up();
+    await tester.pumpAndSettle();
+
+    expect(find.text(favoris[1].label), findsOneWidget);
+    expect(find.text('2 / ${favoris.length}'), findsOneWidget);
+  });
+
+  testWidgets('un glissement horizontal ne change pas de carte',
+      (tester) async {
+    final controller = await pumpHome(tester);
+    final favoris = controller.favoriteCards;
+
+    // Seul le sens vertical navigue : un mouvement de travers ne doit pas
+    // deplacer Raphael par surprise.
+    await tester.fling(find.byType(PageView), const Offset(-400, 0), 1200);
+    await tester.pumpAndSettle();
+
+    expect(find.text(favoris[0].label), findsOneWidget);
+    expect(find.text('1 / ${favoris.length}'), findsOneWidget);
   });
 
   testWidgets('un geste vif n\'emporte quand meme qu\'une seule carte',
