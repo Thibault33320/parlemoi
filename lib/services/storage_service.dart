@@ -43,10 +43,12 @@ class StorageService {
           ? {'faim', 'soif', 'pipi', 'popo', 'mal', 'parc'}
           : legacyFavorites.toSet(),
       customCards: [],
-      // Des favoris deja enregistres signent l'appareil de Raphael. Une
-      // installation neuve, elle, appartient a une autre famille : elle
-      // demarre sans prenom, que le parent renseignera.
+      // Des favoris deja enregistres signent l'appareil de Raphael : son
+      // application est deja en place, on ne lui redemande rien. Une
+      // installation neuve appartient a une autre famille et passera par
+      // l'ecran de bienvenue.
       childName: legacyFavorites.isEmpty ? '' : 'Raphaël',
+      setupCompleted: legacyFavorites.isNotEmpty,
       columns: prefs.getInt(_legacyColumnsKey) ?? 2,
       speechRate: prefs.getDouble(_legacySpeechRateKey) ?? 0.36,
     );

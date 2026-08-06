@@ -48,8 +48,12 @@ entre plusieurs cartes visibles en même temps.
 
 ### Côté parent
 
-L'espace parents s'ouvre par un **appui long** sur le cadenas, puis un code
-PIN. Le code par défaut est `2580` et se change dans l'onglet Affichage.
+À la première ouverture, un écran de bienvenue demande le **prénom de
+l'enfant** et un **code parents** — les deux seules choses que l'application ne
+peut pas deviner. Tout le reste est déjà configuré.
+
+L'espace parents s'ouvre ensuite par un **appui long** sur le cadenas, puis ce
+code. Il se change dans l'onglet Affichage.
 
 - **Cartes** — activer/désactiver parmi 413 cartes, favoris, urgences,
   réordonner, créer ses propres cartes.

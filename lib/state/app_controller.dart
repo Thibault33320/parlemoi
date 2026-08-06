@@ -193,6 +193,19 @@ class AppController extends ChangeNotifier {
     await _persist();
   }
 
+  bool get needsSetup => !_settings.setupCompleted;
+
+  /// Enregistre les reponses de l'ecran de bienvenue et ouvre l'application.
+  Future<void> completeSetup({
+    required String childName,
+    required String pin,
+  }) async {
+    _settings.childName = childName.trim();
+    _settings.pin = pin;
+    _settings.setupCompleted = true;
+    await _persist();
+  }
+
   /// Prenom affiche en haut de l'ecran enfant. Vide = seul « PARLEMOI » reste.
   Future<void> setChildName(String value) async {
     _settings.childName = value.trim();
@@ -356,12 +369,20 @@ class AppController extends ChangeNotifier {
     return true;
   }
 
+  /// Remet les cartes et les reglages d'affichage dans leur etat d'origine.
+  ///
+  /// Le code parents et le prenom sont conserves : ce sont la serrure et
+  /// l'identite de l'application, pas des reglages de cartes. Les remettre par
+  /// defaut rouvrirait silencieusement l'espace parents avec le code 2580.
   Future<void> resetToDefaults() async {
     _settings = Settings(
       enabledIds: [..._catalogue.defaultEnabledIds],
       emergencyIds: [..._catalogue.defaultEmergencyIds],
       favoriteIds: {'faim', 'soif', 'pipi', 'popo', 'mal', 'parc'},
       customCards: [],
+      childName: _settings.childName,
+      setupCompleted: _settings.setupCompleted,
+      pin: _settings.pin,
     );
     await _tts.initialize(_settings);
     await _persist();

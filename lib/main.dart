@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'screens/home_screen.dart';
+import 'screens/setup_screen.dart';
 import 'services/catalogue_service.dart';
 import 'services/media_service.dart';
 import 'services/storage_service.dart';
@@ -111,14 +112,30 @@ class _BootstrapState extends State<_Bootstrap> {
 
         return AppScope(
           notifier: controller,
-          child: const HomeScreen(),
+          child: const _Racine(),
         );
       },
     );
   }
 }
 
-/// Ecran de repli. Un ecran blanc laisserait Thibault sans aucune piste.
+/// Aiguille vers l'ecran de bienvenue tant que l'application n'a pas ete mise
+/// en place, puis vers l'ecran de l'enfant.
+///
+/// Ce widget lit le controleur, donc il se reconstruit de lui-meme une fois la
+/// configuration initiale enregistree.
+class _Racine extends StatelessWidget {
+  const _Racine();
+
+  @override
+  Widget build(BuildContext context) {
+    return AppScope.of(context).needsSetup
+        ? const SetupScreen()
+        : const HomeScreen();
+  }
+}
+
+/// Ecran de repli. Un ecran blanc laisserait sans aucune piste.
 class _StartupError extends StatelessWidget {
   const _StartupError({required this.error, required this.onRetry});
 
