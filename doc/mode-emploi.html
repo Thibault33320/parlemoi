@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>ParleMoi — Mode d'emploi</title>
+<style>
+  @page { size: A4; margin: 14mm 14mm 16mm 14mm; }
+
+  :root {
+    --bleu: #4A90E2;
+    --bleu-fonce: #2F5D8C;
+    --rouge: #D93434;
+    --vert: #2E7D32;
+    --jaune: #FFB300;
+    --gris: #5A5A5A;
+    --gris-clair: #EDEDED;
+    --fond-carte: #DDF2FF;
+    --papier: #F7F7F5;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #1E1E1E;
+    font-size: 10.5pt;
+    line-height: 1.5;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page { page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+
+  h1 { font-size: 26pt; margin: 0 0 4mm; font-weight: 800; letter-spacing: -0.4pt; }
+  h2 {
+    font-size: 15pt; font-weight: 800; margin: 0 0 4mm;
+    padding-bottom: 2mm; border-bottom: 2.5px solid var(--bleu);
+  }
+  h3 { font-size: 11.5pt; font-weight: 800; margin: 6mm 0 2mm; }
+  p { margin: 0 0 3mm; }
+  ul { margin: 0 0 3mm; padding-left: 5mm; }
+  li { margin-bottom: 1.5mm; }
+
+  .chapeau { color: var(--gris); font-size: 10pt; margin: -2mm 0 5mm; }
+
+  /* --- Couverture --- */
+  .couverture {
+    height: 258mm; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+  }
+  .couverture img { width: 34mm; height: 34mm; border-radius: 8mm; }
+  .couverture h1 { font-size: 34pt; margin-top: 8mm; }
+  .couverture .sous { font-size: 14pt; color: var(--gris); margin-bottom: 12mm; }
+  .lien {
+    display: inline-block; background: var(--bleu); color: #fff;
+    padding: 3mm 7mm; border-radius: 3mm; font-weight: 700; font-size: 11pt;
+  }
+  .avertissement {
+    margin-top: 16mm; max-width: 130mm; font-size: 9pt; color: var(--gris);
+    border-top: 1px solid var(--gris-clair); padding-top: 4mm;
+  }
+
+  /* --- Blocs --- */
+  .etape { display: flex; gap: 4mm; margin-bottom: 4mm; align-items: flex-start; }
+  .num {
+    flex: 0 0 7mm; height: 7mm; border-radius: 50%;
+    background: var(--bleu); color: #fff;
+    font-weight: 800; font-size: 11pt;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .num.rouge { background: var(--rouge); }
+  .etape .texte { flex: 1; }
+  .etape strong { font-weight: 800; }
+
+  .encadre {
+    background: #EFF4FF; border-left: 4px solid var(--bleu);
+    padding: 3.5mm 4mm; margin: 4mm 0; font-size: 10pt;
+  }
+  .encadre.alerte { background: #FFF3F0; border-left-color: var(--rouge); }
+  .encadre.vert { background: #EFF7EF; border-left-color: var(--vert); }
+  .encadre p:last-child { margin-bottom: 0; }
+
+  .duo { display: flex; gap: 8mm; align-items: flex-start; }
+  .duo .col { flex: 1; }
+
+  /* --- Maquette telephone --- */
+  .tel {
+    width: 58mm; margin-left: 8mm; border: 2.5px solid #2A2A2A; border-radius: 6mm;
+    background: var(--papier); padding: 2mm; flex: 0 0 auto;
+  }
+  .tel .barre {
+    text-align: center; font-weight: 800; font-size: 7pt;
+    padding: 1.5mm 0; letter-spacing: 0.3pt;
+    display: flex; align-items: center; justify-content: center; gap: 2mm;
+  }
+  .cadenas { font-size: 8pt; }
+  .onglets { display: flex; gap: 1.2mm; margin-bottom: 1.5mm; }
+  .onglet {
+    flex: 1; background: #fff; border-radius: 2mm; text-align: center;
+    padding: 1mm 0; font-size: 5.5pt; font-weight: 700; line-height: 1.3;
+  }
+  .onglet .e { font-size: 9pt; display: block; }
+  .onglet.actif { background: var(--bleu-fonce); color: #fff; }
+  .carte {
+    background: var(--fond-carte); border-radius: 4mm; padding: 3mm 2mm 2mm;
+    position: relative; text-align: center;
+  }
+  .carte .compteur {
+    position: absolute; top: 1.5mm; right: 2mm; font-size: 6pt;
+    font-weight: 800; background: #0000000F; border-radius: 2mm; padding: 0.4mm 1.5mm;
+  }
+  .carte .etoile { position: absolute; top: 1.5mm; left: 2mm; font-size: 8pt; }
+  .carte svg { width: 22mm; height: 22mm; margin: 2mm 0 1mm; }
+  .carte .libelle { font-weight: 800; font-size: 9pt; }
+  .carte .hp { font-size: 9pt; margin-top: 0.5mm; }
+  .carte .chev { font-size: 8pt; color: #9A9A9A; line-height: 0.9; }
+  .urgence {
+    background: var(--rouge); color: #fff; font-weight: 800; font-size: 7pt;
+    border-radius: 4mm; padding: 1.5mm 3mm; display: inline-block;
+    float: right; margin-top: 1.5mm;
+  }
+
+  /* --- Reperes numerotes sur les maquettes --- */
+  .repere {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 5mm; height: 5mm; border-radius: 50%;
+    background: var(--rouge); color: #fff; font-size: 8pt; font-weight: 800;
+    vertical-align: middle;
+  }
+  .legende { list-style: none; padding: 0; margin: 0; }
+  .legende li { display: flex; gap: 2.5mm; margin-bottom: 2.5mm; align-items: flex-start; }
+  .legende .repere { flex: 0 0 5mm; margin-top: 0.6mm; }
+
+  /* --- Geste --- */
+  .geste {
+    border: 1.5px dashed var(--bleu); border-radius: 3mm;
+    padding: 3mm; text-align: center; background: #F8FBFF;
+  }
+  .geste .icone { font-size: 20pt; line-height: 1; }
+  .geste .quoi { font-weight: 800; margin-top: 1.5mm; font-size: 10pt; }
+  .geste .comment { font-size: 8.5pt; color: var(--gris); }
+  .gestes { display: flex; gap: 3mm; }
+  .gestes > div { flex: 1; }
+
+  /* --- Rangee espace parents --- */
+  .rangee {
+    display: flex; align-items: center; gap: 2.5mm;
+    border: 1px solid var(--gris-clair); border-radius: 2mm;
+    padding: 2mm; background: #fff; margin-bottom: 2mm;
+  }
+  .vignette {
+    width: 11mm; height: 11mm; border-radius: 2.5mm; background: var(--fond-carte);
+    display: flex; align-items: center; justify-content: center; position: relative;
+    flex: 0 0 11mm;
+  }
+  .vignette svg { width: 8mm; height: 8mm; }
+  .pastille-photo {
+    position: absolute; right: -1mm; bottom: -1mm;
+    width: 4.5mm; height: 4.5mm; border-radius: 50%; background: var(--bleu);
+    color: #fff; font-size: 6pt; display: flex; align-items: center; justify-content: center;
+  }
+  .rangee .nom { flex: 1; }
+  .rangee .nom b { font-size: 9.5pt; }
+  .rangee .nom span { display: block; font-size: 8pt; color: var(--gris); }
+  .rangee .actions { font-size: 10pt; letter-spacing: 1mm; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+  th, td { text-align: left; padding: 2mm 2mm; border-bottom: 1px solid var(--gris-clair); vertical-align: top; }
+  th { font-weight: 800; background: #F4F7FC; }
+
+  .pied {
+    position: running(pied); font-size: 8pt; color: var(--gris);
+  }
+
+  .ic { width: 3.6mm; height: 3.6mm; vertical-align: -0.7mm; }
+  .ic-l { width: 6mm; height: 3.4mm; vertical-align: -0.5mm; }
+  .carte .hp .ic { width: 5mm; height: 5mm; }
+  .carte .etoile .ic { width: 3.8mm; height: 3.8mm; }
+  .carte .chev .ic { width: 4mm; height: 4mm; }
+  .barre .ic { width: 3.2mm; height: 3.2mm; }
+  .rangee .actions .ic, .rangee .actions .ic-l { margin-left: 1.5mm; }
+  .pastille-photo svg { width: 2.8mm; height: 2.8mm; }
+  .pin {
+    position: absolute; z-index: 5;
+    width: 5.4mm; height: 5.4mm; border-radius: 50%;
+    background: var(--rouge); color: #fff;
+    font-size: 8pt; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 1.2px #fff;
+  }
+
+  .mini { text-align: center; flex: 0 0 auto; }
+  .mini-carte {
+    width: 24mm; background: var(--fond-carte); border-radius: 3mm;
+    padding: 2mm 1mm 1.5mm; border: 2px solid transparent;
+  }
+  .mini-carte.parle {
+    border-color: var(--bleu); transform: scale(1.06);
+    box-shadow: 0 1mm 2mm #4A90E233;
+  }
+  .mini-carte svg { width: 13mm; height: 13mm; }
+  .mini-lib { font-weight: 800; font-size: 6.5pt; margin-top: 1mm; }
+  .mini-leg { font-size: 8pt; color: var(--gris); margin-top: 2.5mm; }
+
+  .panneau {
+    border: 1px solid var(--gris-clair); border-radius: 2.5mm;
+    padding: 3mm; background: #fff; margin: 3mm 0 4mm;
+  }
+  .panneau-titre { font-weight: 800; font-size: 10pt; margin-bottom: 2.5mm; }
+  .panneau-ligne {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 9pt; color: var(--gris); margin-bottom: 3mm;
+  }
+  .lien-mini { color: var(--bleu); font-weight: 700; }
+  .bouton-plein {
+    background: #DCE8F8; border-radius: 2mm; text-align: center;
+    padding: 2mm; font-weight: 800; font-size: 9.5pt;
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= COUVERTURE ================= -->
+<section class="page couverture">
+  <img src="icon.png" alt="">
+  <h1>ParleMoi</h1>
+  <div class="sous">Mode d'emploi</div>
+  <p style="max-width:125mm">
+    Application de communication par pictogrammes et voix française,
+    conçue pour <strong>Raphaël</strong>.
+  </p>
+  <p style="max-width:125mm;color:var(--gris);font-size:10pt">
+    Pour les parents et toutes les personnes qui l'accompagnent.
+    L'installation est gratuite et ne demande aucun compte.
+  </p>
+  <div style="margin-top:8mm">
+    <span class="lien">thibault33320.github.io/parlemoi</span>
+  </div>
+  <div class="avertissement">
+    ParleMoi aide à communiquer mais ne remplace pas l'évaluation d'un
+    orthophoniste, d'un ergothérapeute ou d'un professionnel de santé.<br><br>
+    Les pictogrammes sont une création originale pour ce projet. Ce ne sont
+    <strong>pas</strong> des symboles Makaton officiels.
+  </div>
+</section>
+
+<!-- ================= INSTALLER ================= -->
+<section class="page">
+  <h2>1 · Installer l'application sur le téléphone</h2>
+  <p class="chapeau">Aucun compte, aucun magasin d'applications, aucun câble.
+  L'application est gratuite.</p>
+
+  <div class="encadre">
+    <p style="font-size:11pt"><strong>L'adresse à ouvrir :</strong><br>
+    <span style="font-size:13pt;font-weight:800;letter-spacing:0.2pt">thibault33320.github.io/parlemoi</span></p>
+    <p style="margin-top:2mm;font-size:9.5pt;color:var(--gris)">
+      Il n'y a rien à chercher dans l'App Store ni sur Google Play :
+      ParleMoi s'installe directement depuis cette page.</p>
+  </div>
+
+  <div class="duo">
+    <div class="col">
+      <h3>Sur iPhone et iPad</h3>
+      <div class="etape">
+        <div class="num">1</div>
+        <div class="texte">
+          Ouvrir <strong>thibault33320.github.io/parlemoi</strong> avec
+          <strong>Safari</strong>.
+        </div>
+      </div>
+      <div class="etape">
+        <div class="num">2</div>
+        <div class="texte">
+          Appuyer sur le bouton <strong>Partager</strong> — le carré avec une
+          flèche vers le haut, en bas de l'écran.
+        </div>
+      </div>
+      <div class="etape">
+        <div class="num">3</div>
+        <div class="texte">
+          Faire défiler, choisir <strong>« Sur l'écran d'accueil »</strong>,
+          puis <strong>Ajouter</strong>.
+        </div>
+      </div>
+      <div class="encadre alerte">
+        <p><strong>Chrome sur iPhone ne sait pas installer.</strong>
+        Il faut obligatoirement Safari.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3>Sur Android</h3>
+      <div class="etape">
+        <div class="num">1</div>
+        <div class="texte">
+          Ouvrir la même adresse avec <strong>Chrome</strong>.
+        </div>
+      </div>
+      <div class="etape">
+        <div class="num">2</div>
+        <div class="texte">
+          Menu <strong>⋮</strong> en haut à droite →
+          <strong>Installer l'application</strong>.
+        </div>
+      </div>
+      <div class="etape">
+        <div class="num">3</div>
+        <div class="texte">Confirmer.</div>
+      </div>
+      <div class="encadre vert">
+        <p>Si Chrome ne propose pas « Installer », choisir
+        <strong>Ajouter à l'écran d'accueil</strong> : c'est la même chose.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Après l'installation</h3>
+  <p>
+    L'icône ParleMoi apparaît sur l'écran d'accueil. L'application s'ouvre en
+    plein écran, sans barre de navigateur.
+  </p>
+  <div class="encadre">
+    <p><strong>Ouvrez-la une première fois avec du réseau.</strong>
+    C'est ce premier lancement qui enregistre tout sur le téléphone. Ensuite
+    elle fonctionne <strong>sans connexion</strong> : au parc, en voiture, à
+    l'école.</p>
+  </div>
+</section>
+
+<!-- ================= ECRAN ENFANT ================= -->
+<section class="page">
+  <h2>2 · L'écran de Raphaël</h2>
+  <p class="chapeau">Une carte occupe tout l'écran. Rien d'autre ne le distrait.</p>
+
+  <div class="duo">
+    <div class="tel" style="position:relative">
+      
+      <span class="pin" style="top:16mm;left:-3mm">1</span>
+      <span class="pin" style="top:34mm;left:-3mm">2</span>
+      <span class="pin" style="top:22.5mm;right:-3mm">3</span>
+      <span class="pin" style="top:22.5mm;left:-3mm">4</span>
+      <span class="pin" style="top:52mm;right:-3mm">5</span>
+      <span class="pin" style="bottom:1mm;right:-3mm">6</span>
+      <span class="pin" style="top:2mm;right:-3mm">7</span>
+      <div class="barre">PARLEMOI · RAPHAËL <svg class="ic" viewBox="0 0 24 24"><path fill="#2A2A2A" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm0 2a3 3 0 0 1 3 3v3H9V7a3 3 0 0 1 3-3z"/></svg></div>
+      <div class="onglets">
+        <div class="onglet actif"><span class="e">⭐</span>Favoris</div>
+        <div class="onglet"><span class="e">🍽️</span>Besoins</div>
+        <div class="onglet"><span class="e">😊</span>Émotions</div>
+        <div class="onglet"><span class="e">🤕</span>Douleur</div>
+      </div>
+      <div class="carte">
+        <span class="etoile"><svg class="ic" viewBox="0 0 24 24"><path fill="#FFB300" d="M12 2l3 6.5 7 .8-5.2 4.7 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg></span>
+        <span class="compteur">1 / 6</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="52" fill="#ffffff" stroke="#333" stroke-width="8"/>
+          <path d="M35 45v110M50 45v45c0 20-30 20-30 0V45M165 45v110" stroke="#333" stroke-width="8" fill="none" stroke-linecap="round"/>
+        </svg>
+        <div class="libelle">J'AI FAIM</div>
+        <div class="hp"><svg class="ic" viewBox="0 0 24 24"><path fill="#404040" d="M4 9v6h4l5 4V5L8 9zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></div>
+        <div class="chev"><svg class="ic" viewBox="0 0 24 24"><path fill="none" stroke="#9A9A9A" stroke-width="3" stroke-linecap="round" d="M6 9l6 6 6-6"/></svg></div>
+      </div>
+      <div><span class="urgence">SOS URGENCE</span></div>
+    </div>
+
+    <div class="col">
+      <ul class="legende">
+        <li><span class="repere">1</span>
+          <div><strong>Les catégories.</strong> Favoris d'abord, puis Besoins,
+          Émotions, Douleur… Un toucher pour changer de thème.</div></li>
+        <li><span class="repere">2</span>
+          <div><strong>La carte.</strong> Toute sa surface fait parler — pas de
+          petit bouton à viser.</div></li>
+        <li><span class="repere">3</span>
+          <div><strong>Le compteur « 1 / 6 ».</strong> Indique où l'on en est
+          dans la catégorie. Il est là pour l'adulte.</div></li>
+        <li><span class="repere">4</span>
+          <div><strong>L'étoile.</strong> La carte fait partie des favoris.</div></li>
+        <li><span class="repere">5</span>
+          <div><strong>Le chevron ⌄.</strong> Il reste des cartes en dessous.</div></li>
+        <li><span class="repere">6</span>
+          <div><strong>SOS URGENCE.</strong> Toujours visible, sur tous les
+          écrans.</div></li>
+        <li><span class="repere">7</span>
+          <div><strong>Le cadenas <svg class="ic" viewBox="0 0 24 24"><path fill="#2A2A2A" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm0 2a3 3 0 0 1 3 3v3H9V7a3 3 0 0 1 3-3z"/></svg>.</strong> L'accès aux réglages. Il demande
+          un <em>appui long</em> : un toucher accidentel de Raphaël ne l'ouvre
+          pas.</div></li>
+      </ul>
+    </div>
+  </div>
+
+
+  <h3>Ce que Raphaël voit quand la carte parle</h3>
+  <div class="duo" style="gap:6mm;align-items:center">
+    <div class="mini">
+      <div class="mini-carte">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="52" fill="#ffffff" stroke="#333" stroke-width="8"/>
+          <path d="M35 45v110M50 45v45c0 20-30 20-30 0V45M165 45v110" stroke="#333" stroke-width="8" fill="none" stroke-linecap="round"/>
+        </svg>
+        <div class="mini-lib">J'AI FAIM</div>
+      </div>
+      <div class="mini-leg">au repos</div>
+    </div>
+    <div style="font-size:16pt;color:var(--bleu);font-weight:800">&rarr;</div>
+    <div class="mini">
+      <div class="mini-carte parle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="52" fill="#ffffff" stroke="#333" stroke-width="8"/>
+          <path d="M35 45v110M50 45v45c0 20-30 20-30 0V45M165 45v110" stroke="#333" stroke-width="8" fill="none" stroke-linecap="round"/>
+        </svg>
+        <div class="mini-lib">J'AI FAIM</div>
+      </div>
+      <div class="mini-leg">pendant la parole</div>
+    </div>
+    <div style="flex:1">
+      <p style="margin:0">
+        La carte <strong>grossit légèrement et s'entoure de bleu</strong>
+        pendant que la voix parle, et le haut-parleur s'anime.
+      </p>
+      <p style="margin:2mm 0 0;color:var(--gris);font-size:9.5pt">
+        Ce retour compte : Raphaël voit que son geste a fonctionné, même s'il
+        n'entend pas bien ou si le téléphone est en silencieux.
+      </p>
+    </div>
+  </div>
+
+  <div class="encadre vert">
+    <p><strong>Rien n'est modifiable depuis cet écran.</strong> Raphaël peut
+    toucher partout : il ne peut ni déplacer une carte, ni changer un réglage,
+    ni sortir de l'application.</p>
+  </div>
+</section>
+
+<!-- ================= GESTES ================= -->
+<section class="page">
+  <h2>3 · Les trois gestes</h2>
+  <p class="chapeau">C'est tout ce que Raphaël a besoin de savoir faire.</p>
+
+  <div class="gestes">
+    <div>
+      <div class="geste">
+        <div class="icone">👆</div>
+        <div class="quoi">Toucher</div>
+        <div class="comment">la carte parle</div>
+      </div>
+    </div>
+    <div>
+      <div class="geste">
+        <div class="icone">👆⬆️</div>
+        <div class="quoi">Glisser vers le haut</div>
+        <div class="comment">carte suivante</div>
+      </div>
+    </div>
+    <div>
+      <div class="geste">
+        <div class="icone">🆘</div>
+        <div class="quoi">SOS URGENCE</div>
+        <div class="comment">besoins urgents</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Toucher la carte</h3>
+  <p>
+    N'importe où sur la carte. La voix prononce la phrase, la carte
+    <strong>grossit et s'entoure de bleu</strong> pendant qu'elle parle : Raphaël
+    voit que son geste a fonctionné.
+  </p>
+
+  <h3>Glisser du bas vers le haut</h3>
+  <p>
+    Exactement comme les vidéos sur Facebook ou Instagram. Le doigt monte, la
+    carte suivante arrive. Vers le bas pour revenir en arrière.
+  </p>
+  <div class="encadre">
+    <p><strong>Un geste = une carte, toujours.</strong> Même un geste vif et
+    rapide n'avance que d'une seule carte. Raphaël ne peut pas se retrouver
+    quatre cartes plus loin sans comprendre pourquoi.</p>
+  </div>
+
+  <h3>Le bouton SOS URGENCE</h3>
+  <p>
+    Il regroupe ce qui ne peut pas attendre : <em>j'ai mal</em>,
+    <em>très mal</em>, <em>aide-moi</em>, <em>pipi</em>, <em>au secours</em>,
+    <em>stop</em>, <em>j'ai du mal à respirer</em>.
+  </p>
+  <div class="encadre alerte">
+    <p><strong>Deux touchers maximum.</strong> Un pour ouvrir, un pour parler.
+    Jamais plus. Vous choisissez vous-même quelles cartes y figurent.</p>
+  </div>
+</section>
+
+<!-- ================= ESPACE PARENTS ================= -->
+<section class="page">
+  <h2>4 · Entrer dans l'espace parents</h2>
+
+  <div class="etape">
+    <div class="num">1</div>
+    <div class="texte">
+      <strong>Appui long sur le cadenas <svg class="ic" viewBox="0 0 24 24"><path fill="#2A2A2A" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm0 2a3 3 0 0 1 3 3v3H9V7a3 3 0 0 1 3-3z"/></svg></strong>, en haut à droite.
+      Gardez le doigt posé environ une seconde.
+      <br><span style="color:var(--gris);font-size:9.5pt">Un simple toucher
+      ne fait rien : c'est volontaire, pour que Raphaël ne tombe jamais
+      dessus.</span>
+    </div>
+  </div>
+  <div class="etape">
+    <div class="num">2</div>
+    <div class="texte">
+      Saisir le code. Le code par défaut est
+      <strong style="font-size:14pt;letter-spacing:2pt">2580</strong>
+    </div>
+  </div>
+
+  <div class="encadre alerte">
+    <p><strong>Changez ce code.</strong> Onglet <em>Affichage</em> →
+    <em>Code parents</em>. Ce n'est pas une sécurité forte : cela évite
+    seulement les modifications accidentelles.</p>
+  </div>
+
+  <h3>Les quatre onglets</h3>
+  <table>
+    <tr><th style="width:32mm">Onglet</th><th>Ce qu'on y fait</th></tr>
+    <tr><td><strong>Cartes</strong></td>
+        <td>Choisir les cartes actives parmi 413, favoris, urgences, ordre,
+            photo et voix, créer ses propres cartes</td></tr>
+    <tr><td><strong>Voix</strong></td>
+        <td>Choisir la voix française du téléphone, vitesse, hauteur, volume</td></tr>
+    <tr><td><strong>Affichage</strong></td>
+        <td>Une carte par écran ou grille, masquer les textes, code parents</td></tr>
+    <tr><td><strong>Sauvegarde</strong></td>
+        <td>Copier ses réglages, les restaurer, tout réinitialiser</td></tr>
+  </table>
+
+  <h3>Activer et désactiver des cartes</h3>
+  <p>
+    L'application contient <strong>413 cartes</strong> réparties en 17
+    catégories, mais <strong>39 seulement sont actives au départ</strong>.
+    C'est voulu : en montrer 413 d'un coup rendrait l'application inutilisable.
+  </p>
+  <p>
+    Dans l'onglet <em>Cartes</em>, l'interrupteur à droite de chaque ligne
+    active ou désactive la carte. Ajoutez-en au rythme de Raphaël.
+  </p>
+</section>
+
+<!-- ================= PHOTO ET VOIX ================= -->
+<section class="page">
+  <h2>5 · Mettre une photo et enregistrer votre voix</h2>
+  <p class="chapeau">Sur n'importe quelle carte, y compris celles fournies.</p>
+
+  <div class="etape">
+    <div class="num">1</div>
+    <div class="texte">Espace parents → onglet <strong>Cartes</strong>.</div>
+  </div>
+  <div class="etape">
+    <div class="num">2</div>
+    <div class="texte">
+      <strong>Touchez l'image</strong> de la carte, à gauche de son nom.
+      Le petit appareil photo bleu indique qu'elle est modifiable.
+    </div>
+  </div>
+
+  <div class="rangee">
+    <div class="vignette">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+        <path d="M60 35h80l-12 130H72z" fill="#8dd7ff" stroke="#333" stroke-width="8"/>
+        <path d="M70 80h60" stroke="#fff" stroke-width="8"/>
+      </svg>
+      <span class="pastille-photo"><svg viewBox="0 0 24 24"><path fill="#fff" d="M9 3l-1.7 2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.3L15 3zm3 5.5a5 5 0 1 1 0 10 5 5 0 0 1 0-10z"/></svg></span>
+    </div>
+    <div class="nom"><b>J'AI SOIF</b><span>J'ai soif</span></div>
+    <div class="actions"><svg class="ic" viewBox="0 0 24 24"><path fill="#FFB300" d="M12 2l3 6.5 7 .8-5.2 4.7 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#D93434"/><text x="12" y="16" text-anchor="middle" font-size="9" font-weight="800" fill="#fff" font-family="Arial">SOS</text></svg><svg class="ic" viewBox="0 0 24 24"><path fill="#4A90E2" d="M9 3l-1.7 2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.3L15 3zm3 5.5a5 5 0 1 1 0 10 5 5 0 0 1 0-10z"/></svg><svg class="ic-l" viewBox="0 0 36 20"><rect x="1" y="3" width="34" height="14" rx="7" fill="#4A90E2"/><circle cx="27" cy="10" r="8" fill="#fff" stroke="#4A90E2"/></svg></div>
+  </div>
+
+  <h3>La photo</h3>
+  <p>
+    Deux boutons : <strong>Prendre une photo</strong> (appareil du téléphone) ou
+    <strong>Choisir une image</strong> (photos existantes). Un troisième bouton
+    permet de <strong>revenir au pictogramme</strong> d'origine.
+  </p>
+  <div class="encadre">
+    <p>Une photo de l'objet réel aide quand le pictogramme ne parle pas à
+    Raphaël : <em>son</em> doudou, <em>sa</em> tasse, <em>son</em> école.</p>
+  </div>
+
+  <h3>Votre voix</h3>
+  <p>
+    Le bouton <strong>Enregistrer ma voix</strong> lance l'enregistrement,
+    <strong>Arrêter</strong> le termine. Un maximum de 10 secondes, largement
+    suffisant pour une phrase de carte.
+  </p>
+  <ul>
+    <li>Une pastille verte <svg class="ic" viewBox="0 0 24 24"><path fill="#2E7D32" d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11z"/></svg> apparaît sur la carte : elle a votre voix.</li>
+    <li>Le bouton <svg class="ic" viewBox="0 0 24 24"><path fill="#404040" d="M8 5v14l11-7z"/></svg> permet de la réécouter, la corbeille de la supprimer.</li>
+    <li>Sans enregistrement, la carte parle avec la voix de synthèse —
+        <strong>c'est le fonctionnement normal, pas un manque</strong>.</li>
+  </ul>
+  <div class="encadre vert">
+    <p><strong>Une voix familière porte davantage.</strong> Enregistrer
+    « Je veux maman » avec la vraie voix de maman a plus de sens pour Raphaël
+    qu'une voix de synthèse.</p>
+  </div>
+
+
+  <div class="panneau">
+    <div class="panneau-titre">
+      <svg class="ic" viewBox="0 0 24 24"><path fill="#2A2A2A" d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11z"/></svg>
+      Voix de la carte
+    </div>
+    <div class="panneau-ligne">
+      Voix de synthèse : « J'ai soif »
+      <span class="lien-mini">Écouter</span>
+    </div>
+    <div class="bouton-plein">
+      <svg class="ic" viewBox="0 0 24 24"><path fill="#2A2A2A" d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11z"/></svg>
+      Enregistrer ma voix
+    </div>
+  </div>
+
+  <h3>Créer une carte de toutes pièces</h3>
+  <p>
+    Bouton <strong>Carte perso</strong>, en bas de l'onglet <em>Cartes</em>.
+    Vous choisissez le texte affiché, la phrase prononcée, un pictogramme, une
+    catégorie — et si vous le souhaitez une photo et votre voix.
+  </p>
+</section>
+
+<!-- ================= REGLAGES ================= -->
+<section class="page">
+  <h2>6 · Les autres réglages</h2>
+
+  <h3>Onglet Voix</h3>
+  <ul>
+    <li><strong>Choix de la voix</strong> parmi les voix françaises installées
+        sur le téléphone. Toucher une voix la fait dire « Bonjour Raphaël ».</li>
+    <li><strong>Vitesse</strong> — plus lent aide souvent à la compréhension.</li>
+    <li><strong>Hauteur</strong> et <strong>volume</strong>.</li>
+    <li><strong>Tester la voix</strong> pour entendre le réglage complet.</li>
+  </ul>
+  <div class="encadre">
+    <p>Aucune voix française proposée ? Sur Android :
+    <em>Paramètres → Langues → Synthèse vocale</em> permet d'en ajouter.</p>
+  </div>
+
+  <h3>Onglet Affichage</h3>
+  <ul>
+    <li><strong>Une par écran</strong> (par défaut) ou <strong>Grille</strong>.
+        La grille sert à proposer un choix entre deux ou trois cartes visibles
+        en même temps.</li>
+    <li><strong>Masquer les textes</strong> agrandit l'image. Raphaël ne lit pas
+        seul : le texte est surtout utile aux adultes.</li>
+    <li><strong>Code parents</strong>.</li>
+  </ul>
+
+  <h3>Onglet Sauvegarde</h3>
+  <ul>
+    <li><strong>Copier ma sauvegarde</strong> place tous vos réglages, favoris,
+        cartes personnalisées, <em>photos et voix enregistrées</em> dans le
+        presse-papier. Collez-les dans un e-mail ou une note.</li>
+    <li><strong>Coller une sauvegarde</strong> les réinstalle — y compris sur un
+        autre téléphone.</li>
+    <li><strong>Tout réinitialiser</strong> revient à l'état d'origine.</li>
+  </ul>
+  <div class="encadre alerte">
+    <p><strong>Faites une sauvegarde</strong> dès que vous avez pris le temps de
+    personnaliser. Les données ne sont stockées que sur le téléphone : elles ne
+    partent nulle part, mais elles disparaissent avec lui.</p>
+  </div>
+
+  <h3>Ordre des cartes</h3>
+  <p>
+    Dans l'onglet <em>Cartes</em>, choisissez une catégorie puis touchez
+    <strong>Ordre</strong>. Les cartes se déplacent par glissement.
+  </p>
+  <div class="encadre vert">
+    <p><strong>Une position stable aide Raphaël</strong> à retrouver une carte
+    par mémoire du geste, sans avoir à la lire. Évitez de réorganiser souvent.</p>
+  </div>
+</section>
+
+
+<!-- ================= DEUX TELEPHONES ================= -->
+<section class="page">
+  <h2>7 · Installer sur un deuxième téléphone</h2>
+  <p class="chapeau">Pour que Raphaël retrouve les mêmes cartes partout.</p>
+
+  <p>
+    Chaque téléphone garde ses propres réglages : <strong>rien ne se
+    synchronise automatiquement</strong>. Les données restent sur l'appareil,
+    elles ne partent sur aucun serveur.
+  </p>
+  <p>
+    Si une personne a déjà pris le temps de choisir les cartes, d'ajouter des
+    photos ou d'enregistrer sa voix, tout cela se transmet en trois étapes.
+  </p>
+
+  <div class="etape">
+    <div class="num">1</div>
+    <div class="texte">
+      <strong>Sur le téléphone déjà configuré</strong><br>
+      Espace parents → onglet <em>Sauvegarde</em> →
+      <strong>Copier ma sauvegarde</strong>.
+    </div>
+  </div>
+  <div class="etape">
+    <div class="num">2</div>
+    <div class="texte">
+      <strong>Envoyer</strong><br>
+      Coller dans un e-mail ou un message et l'envoyer à l'autre personne.
+      C'est un long texte : c'est normal.
+    </div>
+  </div>
+  <div class="etape">
+    <div class="num">3</div>
+    <div class="texte">
+      <strong>Sur le second téléphone</strong><br>
+      Installer l'application (page 2), copier le texte reçu, puis
+      Espace parents → <em>Sauvegarde</em> →
+      <strong>Coller une sauvegarde</strong>.
+    </div>
+  </div>
+
+  <h3>Ce qui est transmis</h3>
+  <ul>
+    <li>Les cartes actives et leur ordre</li>
+    <li>Les favoris et les cartes d'urgence</li>
+    <li>Les cartes personnalisées</li>
+    <li><strong>Les photos et les voix enregistrées</strong></li>
+    <li>Les réglages de voix, d'affichage et le code parents</li>
+  </ul>
+
+  <div class="encadre vert">
+    <p><strong>Les mêmes cartes aux mêmes places dans les deux maisons aident
+    Raphaël plus qu'on ne l'imagine.</strong> Il retrouve une carte par mémoire
+    du geste, pas en la lisant. Si l'ordre change d'un endroit à l'autre, il
+    doit tout réapprendre.</p>
+  </div>
+
+  <div class="encadre alerte">
+    <p>Refaire une sauvegarde après chaque changement important, et la
+    renvoyer. Sans cela les deux téléphones divergent petit à petit.</p>
+  </div>
+
+  <h3>Si vous partez de zéro</h3>
+  <p>
+    Ce n'est pas grave : l'application arrive déjà configurée avec 39 cartes
+    essentielles — manger, boire, dormir, toilettes, j'ai mal, oui, non, encore,
+    fini, aide, papa, maman. Elle est utilisable immédiatement après
+    l'installation, sans aucun réglage.
+  </p>
+</section>
+
+<!-- ================= DEPANNAGE ================= -->
+<section class="page">
+  <h2>8 · En cas de problème</h2>
+
+  <table>
+    <tr><th style="width:52mm">Ce qui se passe</th><th>Quoi faire</th></tr>
+    <tr>
+      <td>Les cartes ne parlent pas</td>
+      <td>Vérifier que le téléphone n'est pas en silencieux, puis le volume dans
+          l'onglet <em>Voix</em>. Sur iPhone, le petit interrupteur sur la
+          tranche coupe le son.</td>
+    </tr>
+    <tr>
+      <td>La voix n'est pas française</td>
+      <td>Onglet <em>Voix</em> → choisir une voix dont la langue commence par
+          <em>fr</em>.</td>
+    </tr>
+    <tr>
+      <td>Le glissement ne change pas de carte</td>
+      <td>Fermer complètement l'application et la rouvrir. Si elle a été ouverte
+          dans le navigateur avant d'être installée, l'ancienne version peut
+          rester en mémoire.</td>
+    </tr>
+    <tr>
+      <td>L'application ne s'ouvre pas sans réseau</td>
+      <td>Il faut l'avoir ouverte <strong>une fois avec du réseau</strong> après
+          l'installation.</td>
+    </tr>
+    <tr>
+      <td>L'enregistrement de la voix échoue</td>
+      <td>Autoriser le micro dans les réglages du téléphone, pour Safari ou pour
+          ParleMoi.</td>
+    </tr>
+    <tr>
+      <td>Code parents oublié</td>
+      <td>Il n'y a pas de récupération. Il faut réinstaller l'application, ce
+          qui efface les personnalisations — d'où l'intérêt des sauvegardes.</td>
+    </tr>
+    <tr>
+      <td>Raphaël sort de l'application</td>
+      <td>Sur iPhone : <em>Réglages → Accessibilité → Accès guidé</em> verrouille
+          le téléphone sur une seule application.</td>
+    </tr>
+  </table>
+
+  <h3>Quelques repères d'usage</h3>
+  <ul>
+    <li>Commencer petit. Quelques cartes bien choisies valent mieux que
+        quarante.</li>
+    <li>Placer les cartes vraiment utiles dans <strong>Favoris</strong> :
+        c'est l'écran d'ouverture.</li>
+    <li>Montrer soi-même : toucher une carte devant lui et dire la phrase.</li>
+    <li>Ne jamais forcer la main. La carte doit rester un moyen de demander,
+        pas un exercice.</li>
+    <li>Accepter tous les usages, même inattendus. Une carte touchée vingt fois
+        de suite reste une communication.</li>
+  </ul>
+
+  <div class="encadre">
+    <p><strong>Adresse de l'application</strong><br>
+    thibault33320.github.io/parlemoi</p>
+    <p style="margin-top:2mm"><strong>Code parents par défaut</strong> : 2580
+    — à changer.</p>
+  </div>
+
+  <p style="margin-top:10mm;font-size:8.5pt;color:var(--gris);border-top:1px solid var(--gris-clair);padding-top:3mm">
+    ParleMoi aide à communiquer mais ne remplace pas l'évaluation d'un
+    orthophoniste, d'un ergothérapeute ou d'un professionnel de santé.
+    Pour « j'ai mal », les cartes permettent d'indiquer une zone du corps et une
+    intensité, sans jamais retarder l'accès au bouton d'urgence.
+  </p>
+</section>
+
+</body>
+</html>

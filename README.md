@@ -8,6 +8,12 @@ l'application prononce la phrase à sa place.
 
 **En ligne : https://thibault33320.github.io/parlemoi/**
 
+**Mode d'emploi à imprimer ou à envoyer :
+[mode-emploi.pdf](https://thibault33320.github.io/parlemoi/mode-emploi.pdf)**
+— 9 pages illustrées, destinées aux parents et aux accompagnants. Source :
+[`doc/mode-emploi.html`](doc/mode-emploi.html), rendu en PDF par Chrome
+(`--headless --print-to-pdf`).
+
 ## Installer sur iPhone ou Android
 
 Aucun compte, aucun magasin d'applications, aucun câble.

@@ -27,6 +27,9 @@ EXCLUSIONS = {
     "sw.js",
     ".last_build_id",
     "assets/NOTICES",
+    # Le mode d'emploi se telecharge, il n'a pas a peser 500 Ko dans le cache
+    # de chaque telephone.
+    "mode-emploi.pdf",
 }
 EXTENSIONS_EXCLUES = {".symbols", ".map"}
 
