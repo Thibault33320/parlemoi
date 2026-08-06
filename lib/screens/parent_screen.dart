@@ -202,11 +202,11 @@ class _AstucePhotoEtVoix extends StatelessWidget {
       width: double.infinity,
       color: const Color(0xFFEFF4FF),
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-      child: Row(
+      child: const Row(
         children: [
-          const Icon(Icons.lightbulb_outline_rounded, size: 20),
-          const SizedBox(width: 10),
-          const Expanded(
+          Icon(Icons.lightbulb_outline_rounded, size: 20),
+          SizedBox(width: 10),
+          Expanded(
             child: Text(
               "Touchez l'image d'une carte pour la remplacer par une photo "
               'ou enregistrer votre voix.',
