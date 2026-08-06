@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Archive de depot, regenerable par tool/build_inpi_dossier.py
+inpi/*.zip
