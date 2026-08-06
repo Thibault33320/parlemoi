@@ -8,6 +8,21 @@ l'application prononce la phrase à sa place.
 
 **En ligne : https://thibault33320.github.io/parlemoi/**
 
+## Installer sur iPhone ou Android
+
+Aucun compte, aucun magasin d'applications, aucun câble.
+
+1. Ouvrir **https://thibault33320.github.io/parlemoi/** — sur iPhone avec
+   **Safari** (Chrome iOS ne sait pas installer), sur Android avec Chrome.
+2. iPhone : bouton **Partager** (le carré avec la flèche) → **Sur l'écran
+   d'accueil**. Android : menu **⋮** → **Installer l'application**.
+3. L'icône ParleMoi apparaît sur l'écran d'accueil. L'application s'ouvre en
+   plein écran, sans barre de navigateur.
+
+**Elle fonctionne ensuite sans connexion** : moteur de rendu, polices,
+pictogrammes et catalogue sont mis en cache au premier lancement. Il faut
+simplement l'avoir ouverte une fois avec du réseau.
+
 ## Ce que fait l'application
 
 ### Côté enfant
@@ -75,8 +90,12 @@ flutter run               # appareil connecté
 ### Construire
 
 ```bash
-# Web — le base-href est indispensable, sinon les assets tombent en 404
-flutter build web --release --base-href /parlemoi/
+# Web — les deux options sont indispensables :
+#   --base-href : sinon tous les assets tombent en 404
+#   --no-web-resources-cdn : sinon le moteur de rendu (7 Mo) est téléchargé
+#     chez Google, et l'application ne démarre pas du tout hors connexion
+flutter build web --release --base-href /parlemoi/ --no-web-resources-cdn
+python3 tool/build_service_worker.py      # cache hors ligne
 
 # Android — nécessite le SDK Android installé localement
 flutter build apk --release
@@ -148,6 +167,18 @@ chiffre. Ce défaut est invisible à la compilation et ne se voit qu'à l'écran
 exportée emporte ainsi les photos et les enregistrements, et se réinstalle telle
 quelle sur un autre appareil. Les photos sont réduites à 640 px et les
 enregistrements plafonnés à 10 secondes pour que les sauvegardes restent légères.
+
+**Rien n'est chargé depuis Internet au démarrage.** Flutter Web va par défaut
+chercher son moteur de rendu et ses polices chez Google : hors connexion,
+l'application ne s'ouvre pas du tout. Trois mesures ensemble corrigent cela —
+`--no-web-resources-cdn`, les polices embarquées (Roboto et Noto Color Emoji,
+réduites au strict nécessaire), et le service worker de
+[`tool/build_service_worker.py`](tool/build_service_worker.py). Flutter 3.44 ne
+livre plus qu'un service worker factice qui se désinscrit lui-même ; le nôtre
+pré-charge la coquille et met le reste en cache au premier affichage.
+
+Vérification : charger la page, couper le serveur, recharger. L'application doit
+s'ouvrir normalement, texte et pictogrammes compris.
 
 **L'ordre des cartes est explicite et stable.** Raphaël retrouve une carte par
 mémoire du geste, sans la lire. Réordonner une catégorie ne déplace aucune carte

@@ -35,3 +35,16 @@ flutter:
     - family: NotoColorEmoji
       fonts:
         - asset: assets/fonts/NotoColorEmoji.ttf
+
+    # CanvasKit n'a accès à aucune police système : sans celle-ci, le web va
+    # chercher Roboto chez Google et les libellés des cartes risquent de ne
+    # pas s'afficher hors connexion. Réduite à l'alphabet français par
+    # tool/build_text_font.py (477 Ko -> 3 x 62 Ko).
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Roboto-Black.ttf
+          weight: 900

@@ -24,12 +24,18 @@ class ParleMoiApp extends StatelessWidget {
         brightness: Brightness.light,
       ),
       scaffoldBackgroundColor: const Color(0xFFF7F7F5),
+      // Police embarquee plutot que celle du systeme : sur le web, CanvasKit
+      // n'en a aucune et irait la telecharger a chaque ouverture.
+      fontFamily: 'Roboto',
     );
 
     // Repli global : tout texte de l'application peut contenir un emoji, et il
     // doit s'afficher meme sans connexion.
     return base.copyWith(
-      textTheme: base.textTheme.apply(fontFamilyFallback: emojiFontFallback),
+      textTheme: base.textTheme.apply(
+        fontFamily: 'Roboto',
+        fontFamilyFallback: emojiFontFallback,
+      ),
     );
   }();
 

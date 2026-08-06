@@ -81,10 +81,19 @@ jobs:
 
       - run: flutter pub get
 
-      # Le site est servi depuis https://thibault33320.github.io/parlemoi/ :
-      # sans ce base-href, la page se charge mais tous les assets tombent en 404.
+      # `--base-href` : le site est servi depuis /parlemoi/, sans quoi la page
+      # se charge mais tous les assets tombent en 404.
+      #
+      # `--no-web-resources-cdn` : sans cette option, le moteur de rendu (7 Mo)
+      # est téléchargé depuis les serveurs de Google à chaque ouverture, et
+      # l'application ne démarre pas du tout hors connexion.
       - name: Construire la version web
-        run: flutter build web --release --base-href /parlemoi/
+        run: flutter build web --release --base-href /parlemoi/ --no-web-resources-cdn
+
+      # Flutter ne livre plus qu'un service worker factice qui se désinscrit
+      # lui-même. Celui-ci met réellement l'application en cache.
+      - name: Générer le cache hors ligne
+        run: python3 tool/build_service_worker.py
 
       # Sans ce fichier, GitHub Pages passe le dossier dans Jekyll, qui ignore
       # les fichiers commençant par un underscore.
