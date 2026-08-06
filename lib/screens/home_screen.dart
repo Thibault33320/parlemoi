@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../models/communication_card.dart';
+import '../models/settings.dart';
 import '../state/app_controller.dart';
+import '../widgets/card_pager.dart';
 import '../widgets/communication_tile.dart';
 import 'parent_screen.dart';
 
@@ -54,12 +56,13 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: cards.isEmpty
                 ? const _EmptyCategory()
-                : _CardGrid(
+                : _CardsView(
+                    // Repartir de la premiere carte quand la categorie change,
+                    // plutot que de rester a une position qui n'a plus de sens.
+                    key: ValueKey(_tabId),
                     cards: cards,
-                    columns: controller.settings.columns,
-                    showLabels: controller.settings.showLabels,
+                    settings: controller.settings,
                     speakingCardId: controller.speakingCardId,
-                    favoriteIds: controller.settings.favoriteIds,
                     onTap: controller.speak,
                   ),
           ),
@@ -289,6 +292,44 @@ class _CategoryStrip extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+/// Aiguille vers le mode choisi par le parent.
+class _CardsView extends StatelessWidget {
+  const _CardsView({
+    required this.cards,
+    required this.settings,
+    required this.speakingCardId,
+    required this.onTap,
+    super.key,
+  });
+
+  final List<CommunicationCard> cards;
+  final Settings settings;
+  final String? speakingCardId;
+  final ValueChanged<CommunicationCard> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    if (settings.displayMode == DisplayMode.swipe) {
+      return CardPager(
+        cards: cards,
+        showLabels: settings.showLabels,
+        speakingCardId: speakingCardId,
+        favoriteIds: settings.favoriteIds,
+        onTap: onTap,
+      );
+    }
+
+    return _CardGrid(
+      cards: cards,
+      columns: settings.columns,
+      showLabels: settings.showLabels,
+      speakingCardId: speakingCardId,
+      favoriteIds: settings.favoriteIds,
+      onTap: onTap,
     );
   }
 }

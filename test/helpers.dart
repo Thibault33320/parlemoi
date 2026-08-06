@@ -113,11 +113,15 @@ void removeFakeTts() {
 Future<Catalogue> loadCatalogue() => Catalogue.load(bundle: rootBundle);
 
 /// Construit un controleur pret a l'emploi, avec des preferences vierges.
+///
+/// [resetPrefs] a `false` conserve ce qui a deja ete enregistre : c'est ainsi
+/// qu'on simule une reouverture de l'application.
 Future<AppController> buildController({
   Map<String, Object> initialPrefs = const {},
   FakeMediaService? media,
+  bool resetPrefs = true,
 }) async {
-  SharedPreferences.setMockInitialValues(initialPrefs);
+  if (resetPrefs) SharedPreferences.setMockInitialValues(initialPrefs);
 
   final catalogue = await loadCatalogue();
   final storage = StorageService();

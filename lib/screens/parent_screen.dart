@@ -863,17 +863,48 @@ class _DisplayTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        const _SectionTitle('Nombre de colonnes'),
+        const _SectionTitle('Présentation des cartes'),
         const SizedBox(height: 8),
-        SegmentedButton<int>(
+        SegmentedButton<DisplayMode>(
           segments: const [
-            ButtonSegment(value: 2, label: Text('2 colonnes')),
-            ButtonSegment(value: 3, label: Text('3 colonnes')),
+            ButtonSegment(
+              value: DisplayMode.swipe,
+              icon: Icon(Icons.swipe_vertical_rounded),
+              label: Text('Une par écran'),
+            ),
+            ButtonSegment(
+              value: DisplayMode.grid,
+              icon: Icon(Icons.grid_view_rounded),
+              label: Text('Grille'),
+            ),
           ],
-          selected: {settings.columns},
+          selected: {settings.displayMode},
           onSelectionChanged: (selection) =>
-              controller.setColumns(selection.first),
+              controller.setDisplayMode(selection.first),
         ),
+        const SizedBox(height: 8),
+        Text(
+          settings.displayMode == DisplayMode.swipe
+              ? 'Une carte occupe tout l\'écran. Raphaël glisse vers le haut '
+                  'pour passer à la suivante, comme dans les Reels.'
+              : 'Plusieurs cartes visibles à la fois. Utile pour proposer un '
+                  'choix entre deux ou trois possibilités.',
+          style: const TextStyle(fontSize: 13, color: Color(0xFF606060)),
+        ),
+        if (settings.displayMode == DisplayMode.grid) ...[
+          const SizedBox(height: 24),
+          const _SectionTitle('Nombre de colonnes'),
+          const SizedBox(height: 8),
+          SegmentedButton<int>(
+            segments: const [
+              ButtonSegment(value: 2, label: Text('2 colonnes')),
+              ButtonSegment(value: 3, label: Text('3 colonnes')),
+            ],
+            selected: {settings.columns},
+            onSelectionChanged: (selection) =>
+                controller.setColumns(selection.first),
+          ),
+        ],
         const SizedBox(height: 24),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,

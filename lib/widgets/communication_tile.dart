@@ -80,7 +80,7 @@ class CommunicationTile extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Expanded(child: _Pictogram(card: card)),
+                        Expanded(child: CardPictogram(card: card)),
                         if (showLabel) ...[
                           const SizedBox(height: 8),
                           Text(
@@ -131,11 +131,13 @@ class CommunicationTile extends StatelessWidget {
 
 /// Photo du parent en priorite, puis dessin vectoriel, puis emoji.
 ///
+/// Partage par la grille et par l'affichage plein ecran.
+///
 /// L'emoji passe par le rendu de texte de Flutter plutot que par le `<text>`
 /// des SVG d'origine : `flutter_svg` s'appuierait sur des polices couleur
 /// systeme qui ne sont pas garanties, et Raphael verrait des cadres vides.
-class _Pictogram extends StatelessWidget {
-  const _Pictogram({required this.card});
+class CardPictogram extends StatelessWidget {
+  const CardPictogram({required this.card, super.key});
 
   final CommunicationCard card;
 

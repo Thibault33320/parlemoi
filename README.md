@@ -12,13 +12,18 @@ l'application prononce la phrase à sa place.
 
 ### Côté enfant
 
-- Grandes cartes tactiles, 2 ou 3 colonnes au choix du parent.
+- **Une carte par écran.** On glisse vers le haut pour passer à la suivante,
+  comme dans les Reels — le geste que Raphaël maîtrise déjà. Un repère
+  « 3 / 12 » et des chevrons indiquent qu'il reste des cartes.
 - Toute la surface de la carte déclenche la parole — pas de petit bouton à viser.
 - Retour visuel pendant que la carte parle (la carte grossit et s'entoure).
 - Bouton **URGENCE** permanent : deux touchers maximum pour dire « j'ai mal ».
 - Catégories en bandeau, favoris en premier.
 - Fonctionne sans connexion.
 - Aucun réglage n'est modifiable depuis l'écran de Raphaël.
+
+Le parent peut basculer en mode grille (2 ou 3 colonnes) pour proposer un choix
+entre plusieurs cartes visibles en même temps.
 
 ### Côté parent
 
@@ -147,6 +152,13 @@ enregistrements plafonnés à 10 secondes pour que les sauvegardes restent lég�
 **L'ordre des cartes est explicite et stable.** Raphaël retrouve une carte par
 mémoire du geste, sans la lire. Réordonner une catégorie ne déplace aucune carte
 des autres catégories.
+
+**Un geste, une carte.** Le défilement est piloté à la main
+([`card_pager.dart`](lib/widgets/card_pager.dart)) au lieu d'être laissé à
+l'inertie d'un `PageView`. Avec la physique par défaut, une impulsion vive
+faisait défiler quatre cartes d'un coup : Raphaël se retrouvait ailleurs et
+perdait ce qu'il voulait dire. La carte suit le doigt, mais ne peut jamais
+s'éloigner de plus d'une position.
 
 **Le PIN n'est pas une sécurité forte.** Il empêche une modification
 accidentelle, rien de plus.

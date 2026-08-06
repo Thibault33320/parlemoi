@@ -1,5 +1,20 @@
 import 'communication_card.dart';
 
+/// Comment les cartes se presentent a Raphael.
+enum DisplayMode {
+  /// Une carte par ecran, on passe a la suivante en glissant vers le haut.
+  /// C'est le geste des Reels, que Raphael maitrise deja.
+  swipe,
+
+  /// Plusieurs cartes visibles en meme temps.
+  grid;
+
+  static DisplayMode parse(String? value) => DisplayMode.values.firstWhere(
+        (mode) => mode.name == value,
+        orElse: () => DisplayMode.swipe,
+      );
+}
+
 /// Photo et voix ajoutees par le parent sur une carte donnee.
 ///
 /// Ces medias sont ranges a part plutot que dans la carte elle-meme, pour que
@@ -50,6 +65,7 @@ class Settings {
     required this.customCards,
     Map<String, CardMedia>? cardMedia,
     this.pin = defaultPin,
+    this.displayMode = DisplayMode.swipe,
     this.columns = 2,
     this.speechRate = 0.36,
     this.pitch = 0.95,
@@ -72,6 +88,7 @@ class Settings {
             MapEntry(id, CardMedia.fromJson(value as Map<String, dynamic>)),
       ),
       pin: json['pin'] as String? ?? defaultPin,
+      displayMode: DisplayMode.parse(json['affichage'] as String?),
       columns: json['colonnes'] as int? ?? 2,
       speechRate: (json['debit'] as num?)?.toDouble() ?? 0.36,
       pitch: (json['hauteur'] as num?)?.toDouble() ?? 0.95,
@@ -93,6 +110,7 @@ class Settings {
   Map<String, CardMedia> cardMedia;
 
   String pin;
+  DisplayMode displayMode;
   int columns;
   double speechRate;
   double pitch;
@@ -108,6 +126,7 @@ class Settings {
         'cartesPerso': customCards.map((c) => c.toJson()).toList(),
         'medias': cardMedia.map((id, media) => MapEntry(id, media.toJson())),
         'pin': pin,
+        'affichage': displayMode.name,
         'colonnes': columns,
         'debit': speechRate,
         'hauteur': pitch,

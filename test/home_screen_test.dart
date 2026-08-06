@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:parlemoi/main.dart';
+import 'package:parlemoi/models/settings.dart';
 import 'package:parlemoi/screens/home_screen.dart';
 import 'package:parlemoi/state/app_controller.dart';
 import 'package:parlemoi/widgets/communication_tile.dart';
@@ -13,11 +14,14 @@ void main() {
   setUp(installFakeTts);
   tearDown(removeFakeTts);
 
+  // Ce fichier couvre le mode grille. Le mode par defaut, une carte par ecran,
+  // est teste dans swipe_mode_test.dart.
   Future<AppController> pumpHome(WidgetTester tester) async {
     // `runAsync` est indispensable : le corps d'un `testWidgets` s'execute dans
     // une zone a temps simule, ou la lecture reelle de `assets/catalogue.json`
     // ne se termine jamais et fait expirer le test.
     final controller = (await tester.runAsync(buildController))!;
+    await controller.setDisplayMode(DisplayMode.grid);
 
     await tester.pumpWidget(
       MaterialApp(

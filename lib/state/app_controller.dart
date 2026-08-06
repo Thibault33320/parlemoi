@@ -193,6 +193,11 @@ class AppController extends ChangeNotifier {
     await _persist();
   }
 
+  Future<void> setDisplayMode(DisplayMode value) async {
+    _settings.displayMode = value;
+    await _persist();
+  }
+
   Future<void> setColumns(int value) async {
     _settings.columns = value;
     await _persist();
