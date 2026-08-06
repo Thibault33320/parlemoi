@@ -121,11 +121,14 @@ source). Conservé 30 jours.
 
 Automatique. Chaque push sur `main` déclenche
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) : analyse, tests,
-build web, puis publication sur la branche `gh-pages`. Aucune manipulation
-manuelle.
+build web, puis publication. Aucune manipulation manuelle.
 
-La branche `gh-pages` ne contient que le site construit et est réécrite à
-chaque publication — n'y committez rien à la main.
+La publication passe par `actions/deploy-pages`, le mécanisme officiel de
+GitHub, et non par un envoi sur une branche `gh-pages`. Cette seconde méthode
+déclenchait un workflow « pages build and deployment » distinct, dont l'étape
+de déploiement a fini par échouer de façon répétée sans journal consultable
+sans authentification. Avec un seul mécanisme, un échec de publication est
+visible dans ce workflow.
 
 ## Structure
 

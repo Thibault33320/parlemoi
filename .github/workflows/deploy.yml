@@ -68,8 +68,21 @@ jobs:
     needs: verifier
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+
+    # Publication par le mécanisme officiel de GitHub plutôt que par un envoi
+    # sur la branche gh-pages. Cette dernière déclenchait un second workflow,
+    # « pages build and deployment », dont l'étape de déploiement échouait de
+    # façon répétée sans journal consultable. Ici, un seul mécanisme construit
+    # et publie, et son échec est visible dans ce workflow.
     permissions:
-      contents: write
+      contents: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.publication.outputs.page_url }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -80,6 +93,13 @@ jobs:
           cache: true
 
       - run: flutter pub get
+
+      # Bascule la source des Pages sur « GitHub Actions » si ce n'est pas
+      # déjà le cas, sans passer par les réglages du dépôt.
+      - name: Configurer GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       # `--base-href` : le site est servi depuis /parlemoi/, sans quoi la page
       # se charge mais tous les assets tombent en 404.
@@ -95,24 +115,14 @@ jobs:
       - name: Générer le cache hors ligne
         run: python3 tool/build_service_worker.py
 
-      # Sans ce fichier, GitHub Pages passe le dossier dans Jekyll, qui ignore
-      # les fichiers commençant par un underscore.
-      - name: Désactiver Jekyll
-        run: touch build/web/.nojekyll
+      - name: Vérifier que le mode d'emploi est bien publié
+        run: test -s build/web/mode-emploi.pdf
 
-      - name: Publier sur la branche gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          cd build/web
-          git init --initial-branch=gh-pages
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Publication depuis ${GITHUB_SHA::7}"
-          # Force : gh-pages ne contient que le site construit, jamais de
-          # sources. L'historique du code reste entièrement sur main.
-          git push --force \
-            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
-            gh-pages
+      - name: Préparer l'artefact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+      - name: Déployer
+        id: publication
+        uses: actions/deploy-pages@v4
