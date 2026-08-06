@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!--
+    Remplacé au moment du build par la valeur de `--base-href`.
+    Le site est servi depuis /parlemoi/ : sans cela, tous les assets tombent en 404.
+  -->
+  <base href="/parlemoi/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description"
+        content="Application de communication par pictogrammes et voix française.">
+
+  <!--
+    Indispensable sur téléphone. Sans cette balise, le navigateur mobile rend la
+    page dans une fenêtre virtuelle de 980 px puis la dézoome : les cartes
+    deviennent minuscules et le glissement vertical est interprété comme un
+    défilement de page, pas comme un changement de carte.
+
+    `user-scalable=no` : le pincement n'apporte rien ici, les pictogrammes
+    occupent déjà tout l'écran. En revanche un zoom déclenché par accident
+    laisserait Raphaël devant un affichage décalé qu'il ne saurait pas défaire.
+  -->
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+  <meta name="theme-color" content="#F7F7F5">
+
+  <!-- Ajout à l'écran d'accueil sur iOS -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ParleMoi">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>ParleMoi</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    /*
+      Le glissement vers le haut doit changer de carte, et rien d'autre.
+      Sans ces règles, un balayage vertical déclenche le tirer-pour-rafraîchir
+      d'Android, le rebond élastique d'iOS ou la barre d'adresse du navigateur,
+      et Raphaël voit l'application bouger sans que la carte change.
+    */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: none;
+      background-color: #F7F7F5;
+      /* Un appui maintenu ne doit pas proposer de sélectionner du texte. */
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
