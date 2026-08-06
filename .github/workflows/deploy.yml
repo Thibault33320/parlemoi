@@ -10,9 +10,13 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# `cancel-in-progress: false` : interrompre une publication en cours laissait
+# GitHub Pages dans un état incohérent et faisait échouer la publication
+# suivante. Mieux vaut laisser chaque déploiement aller à son terme, quitte à
+# ce que le suivant patiente.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   verifier:
