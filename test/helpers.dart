@@ -14,7 +14,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Appareil photo et micro simules : les tests n'ont ni l'un ni l'autre.
 class FakeMediaService implements MediaService {
   /// Photo que renverra la prochaine capture, ou `null` pour simuler un refus.
-  String? nextPhoto = base64Encode(List<int>.filled(64, 7));
+  ///
+  /// Un vrai PNG de 1x1 pixel : des octets quelconques feraient echouer le
+  /// decodage et masqueraient un defaut d'affichage derriere une exception.
+  String? nextPhoto = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAA'
+      'DUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 
   /// Audio que renverra le prochain arret d'enregistrement.
   String? nextRecording = base64Encode(List<int>.filled(128, 3));

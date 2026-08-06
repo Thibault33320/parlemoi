@@ -141,6 +141,7 @@ class _CardsTabState extends State<_CardsTab> {
             ),
           ),
           const Divider(height: 1),
+          const _AstucePhotoEtVoix(),
           Expanded(
             child: cards.isEmpty
                 ? const Center(child: Text('Aucune carte ne correspond'))
@@ -188,6 +189,36 @@ String _normalize(String value) {
   return buffer.toString();
 }
 
+/// Rappel permanent de ce que le parent peut faire sur chaque carte.
+///
+/// Sans lui, la possibilite de mettre une photo ou d'enregistrer sa voix se
+/// devine seulement en reconnaissant une icone parmi quatre.
+class _AstucePhotoEtVoix extends StatelessWidget {
+  const _AstucePhotoEtVoix();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      color: const Color(0xFFEFF4FF),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+      child: Row(
+        children: [
+          const Icon(Icons.lightbulb_outline_rounded, size: 20),
+          const SizedBox(width: 10),
+          const Expanded(
+            child: Text(
+              "Touchez l'image d'une carte pour la remplacer par une photo "
+              'ou enregistrer votre voix.',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _CardRow extends StatelessWidget {
   const _CardRow({required this.card, required this.controller});
 
@@ -199,7 +230,13 @@ class _CardRow extends StatelessWidget {
     final enabled = controller.isEnabled(card.id);
 
     return ListTile(
-      leading: _Thumbnail(card: card),
+      // L'image est la cible la plus evidente pour « changer l'image » : la
+      // toucher ouvre la photo et l'enregistrement de la voix.
+      leading: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => _openMediaEditor(context, controller, card),
+        child: _Thumbnail(card: card, showAffordance: true),
+      ),
       title: Text(
         card.label,
         style: const TextStyle(fontWeight: FontWeight.w800),
@@ -246,7 +283,7 @@ class _CardRow extends StatelessWidget {
             visualDensity: VisualDensity.compact,
             onPressed: () => _openMediaEditor(context, controller, card),
             icon: Icon(
-              Icons.tune_rounded,
+              Icons.add_a_photo_rounded,
               color: card.hasPhoto || card.hasRecordedVoice
                   ? Theme.of(context).colorScheme.primary
                   : null,
@@ -271,9 +308,12 @@ class _CardRow extends StatelessWidget {
 }
 
 class _Thumbnail extends StatelessWidget {
-  const _Thumbnail({required this.card});
+  const _Thumbnail({required this.card, this.showAffordance = false});
 
   final CommunicationCard card;
+
+  /// Affiche un petit appareil photo pour signaler que l'image est modifiable.
+  final bool showAffordance;
 
   @override
   Widget build(BuildContext context) {
@@ -312,6 +352,23 @@ class _Thumbnail extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.mic_rounded, size: 12, color: Colors.white),
+            ),
+          )
+        else if (showAffordance)
+          Positioned(
+            bottom: -3,
+            right: -3,
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.photo_camera_rounded,
+                size: 12,
+                color: Colors.white,
+              ),
             ),
           ),
       ],
