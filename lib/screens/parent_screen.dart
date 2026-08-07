@@ -6,6 +6,7 @@ import '../models/communication_card.dart';
 import '../models/settings.dart';
 import '../services/tts_service.dart';
 import '../state/app_controller.dart';
+import '../version.dart';
 import '../widgets/communication_tile.dart';
 import '../widgets/media_editor.dart';
 
@@ -1209,6 +1210,10 @@ class _BackupTab extends StatelessWidget {
           label: const Text('Tout réinitialiser'),
         ),
         const SizedBox(height: 40),
+        const _SectionTitle('Version installée'),
+        const SizedBox(height: 8),
+        const _Version(),
+        const SizedBox(height: 24),
         Card(
           color: const Color(0xFFF0F4FF),
           child: Padding(
@@ -1305,6 +1310,58 @@ class _BackupTab extends StatelessWidget {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Réglages réinitialisés')),
+    );
+  }
+}
+
+/// Version installée, et comment en obtenir une plus récente.
+///
+/// Sans cet affichage, un parent n'a aucun moyen de savoir si une mise à jour
+/// a bien été prise en compte.
+class _Version extends StatelessWidget {
+  const _Version();
+
+  @override
+  Widget build(BuildContext context) {
+    // `appVersion` et `appBuildNumber` sont des constantes de compilation :
+    // tout l'encart peut l'etre aussi.
+    return const Card(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.info_outline_rounded, size: 20),
+                SizedBox(width: 10),
+                Text(
+                  'ParleMoi $appVersion',
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
+                ),
+                SizedBox(width: 8),
+                Text(
+                  '(build $appBuildNumber)',
+                  style: TextStyle(fontSize: 13, color: Color(0xFF808080)),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Pour installer une mise à jour : connectez le téléphone à '
+              'Internet, fermez complètement ParleMoi, puis rouvrez-la. '
+              'Le numéro ci-dessus doit changer.',
+              style: TextStyle(fontSize: 13, color: Color(0xFF505050)),
+            ),
+            SizedBox(height: 6),
+            Text(
+              'Vos cartes, photos et voix enregistrées ne sont jamais perdues '
+              'lors d\'une mise à jour.',
+              style: TextStyle(fontSize: 13, color: Color(0xFF2E7D32)),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

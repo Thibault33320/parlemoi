@@ -10,7 +10,7 @@ l'application prononce la phrase à sa place.
 
 **Mode d'emploi à imprimer ou à envoyer :
 [mode-emploi.pdf](https://thibault33320.github.io/parlemoi/mode-emploi.pdf)**
-— 9 pages illustrées, destinées aux parents et aux accompagnants. Source :
+— 10 pages illustrées, destinées aux parents et aux accompagnants. Source :
 [`doc/mode-emploi.html`](doc/mode-emploi.html), rendu en PDF par Chrome
 (`--headless --print-to-pdf`).
 
